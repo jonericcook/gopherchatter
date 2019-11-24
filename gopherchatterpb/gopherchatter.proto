@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package gopherchatter;
+option go_package="gopherchatterpb";
+
+message Msg {
+    string m = 1;
+}
+
+service GopherChatter {
+    rpc Message(stream Msg) returns (stream Msg) {};
+}
