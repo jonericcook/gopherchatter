@@ -5,6 +5,10 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"os"
+	"os/signal"
+	"strings"
+	"syscall"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -17,6 +21,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
@@ -69,14 +74,14 @@ func (gcs *gopherChatterServer) Authenticate(ctx context.Context, req *gophercha
 			codes.InvalidArgument, "username or password is incorrect",
 		)
 	}
-	mySigningKey := []byte("gopherchatter")
+	signingKey := []byte("gopherchatter")
 	claims := &jwt.StandardClaims{
-		Subject:   data.UserID.String(),
+		Subject:   data.UserID.Hex(),
 		IssuedAt:  time.Now().Unix(),
-		ExpiresAt: time.Now().Add(time.Hour).Unix(),
+		ExpiresAt: time.Now().Add(12 * time.Hour).Unix(),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	ss, err := token.SignedString(mySigningKey)
+	ss, err := token.SignedString(signingKey)
 	if err != nil {
 		return nil, status.Errorf(
 			codes.Unauthenticated, "username or password is incorrect",
@@ -89,27 +94,80 @@ func (gcs *gopherChatterServer) Authenticate(ctx context.Context, req *gophercha
 	}, nil
 }
 
+func (gcs *gopherChatterServer) CreateGroupChat(ctx context.Context, req *gopherchatterv0.CreateGroupChatRequest) (*gopherchatterv0.CreateGroupChatResponse, error) {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return nil, status.Errorf(
+			codes.Internal, "internal error",
+		)
+	}
+	tokenString := strings.TrimPrefix(md["authorization"][0], "Bearer ")
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, status.Errorf(
+				codes.Internal, "internal error",
+			)
+		}
+		return []byte("gopherchatter"), nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok && !token.Valid {
+		return nil, status.Errorf(
+			codes.Unauthenticated, "invalid token",
+		)
+	}
+	if claims["sub"] != req.GetCreatorId() {
+		return nil, status.Errorf(
+			codes.InvalidArgument, "subject in token must match creator_id",
+		)
+	}
+	creatorID, err := primitive.ObjectIDFromHex(req.GetCreatorId())
+	if err != nil {
+		return nil, status.Errorf(
+			codes.Internal, "internal error",
+		)
+	}
+	result, err := gcs.groupChats.InsertOne(ctx, bson.D{
+		{Key: "chat_name", Value: req.GetChatName()},
+		{Key: "creator_id", Value: creatorID},
+	})
+	if err != nil {
+		return nil, status.Errorf(
+			codes.Internal, "internal error",
+		)
+	}
+	return &gopherchatterv0.CreateGroupChatResponse{
+		ChatId:    result.InsertedID.(primitive.ObjectID).Hex(),
+		ChatName:  req.GetChatName(),
+		CreatorId: req.GetCreatorId(),
+	}, nil
+}
+
 func main() {
-	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
+	mongoClient, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
 	if err != nil {
 		log.Fatal(err)
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	mongoCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	err = client.Connect(ctx)
+	err = mongoClient.Connect(mongoCtx)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer client.Disconnect(ctx)
+	defer mongoClient.Disconnect(mongoCtx)
+	fmt.Println("connected to MongoDB at localhost:27017")
 
-	db := client.Database("gopherchatter")
+	db := mongoClient.Database("gopherchatter")
 
-	listener, err := net.Listen("tcp", "0.0.0.0:50051")
+	listener, err := net.Listen("tcp", "localhost:50051")
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
-	s := grpc.NewServer()
+	grpcs := grpc.NewServer()
 	gcs := gopherChatterServer{
 		users:           db.Collection("users"),
 		friends:         db.Collection("friends"),
@@ -117,9 +175,21 @@ func main() {
 		groupChats:      db.Collection("groupchats"),
 		messages:        db.Collection("messages"),
 	}
-	gopherchatterv0.RegisterGopherChatterServer(s, &gcs)
-	fmt.Println("gRPC server started on 0.0.0.0:50051")
-	if err := s.Serve(listener); err != nil {
-		log.Fatalf("failed to serve: %v", err)
-	}
+	gopherchatterv0.RegisterGopherChatterServer(grpcs, &gcs)
+	go func() {
+		if err := grpcs.Serve(listener); err != nil {
+			log.Fatalf("failed to serve: %v", err)
+		}
+	}()
+	fmt.Println("gRPC server started at localhost:50051")
+
+	shutdown := make(chan os.Signal, 1)
+	signal.Notify(shutdown, os.Interrupt, syscall.SIGTERM)
+
+	<-shutdown
+	fmt.Println("\nstopping gRPC server")
+	grpcs.Stop()
+	listener.Close()
+	fmt.Println("closing MongoDB connection")
+	mongoClient.Disconnect(mongoCtx)
 }
