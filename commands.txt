@@ -1,1 +1,0 @@
-protoc gopherchatterpb/gopherchatter.proto --go_out=plugins=grpc:.
