@@ -18,6 +18,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/readpref"
 	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -159,6 +160,10 @@ func main() {
 		log.Fatal(err)
 	}
 	defer mongoClient.Disconnect(mongoCtx)
+	err = mongoClient.Ping(mongoCtx, readpref.Primary())
+	if err != nil {
+		log.Fatalf("mongodb could not be reached: %v", err)
+	}
 	fmt.Println("connected to MongoDB at localhost:27017")
 
 	db := mongoClient.Database("gopherchatter")
