@@ -190,9 +190,9 @@ func (gcs *gopherChatterServer) AddContact(ctx context.Context, req *gopherchatt
 		)
 	}
 	var user bson.M
-	if err := gcs.users.FindOne(ctx, bson.M{"_id": contactID}).Decode(&user); err == nil {
+	if err := gcs.users.FindOne(ctx, bson.M{"_id": contactID}).Decode(&user); err != nil {
 		return nil, status.Errorf(
-			codes.NotFound, "contact not found",
+			codes.NotFound, "user not found",
 		)
 	}
 
@@ -209,6 +209,62 @@ func (gcs *gopherChatterServer) AddContact(ctx context.Context, req *gopherchatt
 	if err != nil {
 		return nil, status.Errorf(
 			codes.Internal, "internal error",
+		)
+	}
+	return &empty.Empty{}, nil
+}
+
+func (gcs *gopherChatterServer) RemoveContact(ctx context.Context, req *gopherchatterv0.RemoveContactRequest) (*empty.Empty, error) {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return nil, status.Errorf(
+			codes.Internal, "internal error",
+		)
+	}
+	tokenString := strings.TrimPrefix(md["authorization"][0], "Bearer ")
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, status.Errorf(
+				codes.Internal, "internal error",
+			)
+		}
+		return []byte("gopherchatter"), nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok && !token.Valid {
+		return nil, status.Errorf(
+			codes.Unauthenticated, "invalid token",
+		)
+	}
+	if claims["sub"] != req.GetUserId() {
+		return nil, status.Errorf(
+			codes.InvalidArgument, "subject in token must match user_id",
+		)
+	}
+	contactID, err := primitive.ObjectIDFromHex(req.GetContactId())
+	if err != nil {
+		return nil, status.Errorf(
+			codes.Internal, "internal error",
+		)
+	}
+	userID, err := primitive.ObjectIDFromHex(req.GetUserId())
+	if err != nil {
+		return nil, status.Errorf(
+			codes.Internal, "internal error",
+		)
+	}
+	var user bson.M
+	if err := gcs.users.FindOne(ctx, bson.M{"_id": contactID}).Decode(&user); err != nil {
+		return nil, status.Errorf(
+			codes.NotFound, "user not found",
+		)
+	}
+	if gcs.contacts.FindOneAndDelete(ctx, bson.M{"user_id": userID, "contact_id": contactID}).Err() != nil {
+		return nil, status.Errorf(
+			codes.NotFound, "contact not found",
 		)
 	}
 	return &empty.Empty{}, nil

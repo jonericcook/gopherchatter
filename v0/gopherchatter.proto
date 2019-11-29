@@ -147,10 +147,10 @@ message AddContactRequest {
   string contact_id = 2;
 }
 
-  // message RemoveContactRequest {
-  //     string user_id = 1;
-  //     string contact_id = 2;
-  // }
+message RemoveContactRequest {
+  string user_id = 1;
+  string contact_id = 2;
+}
 
   // message GetIndividualChatMessagesRequest {
   //     string user_id = 1;
@@ -222,8 +222,7 @@ service GopherChatter {
 
   rpc AddContact(AddContactRequest) returns (google.protobuf.Empty);
 
-    //     rpc RemoveContact(RemoveContactRequest) returns
-    //     (google.protobuf.Empty);
+  rpc RemoveContact(RemoveContactRequest) returns (google.protobuf.Empty);
 
     //     rpc StreamChat(StreamChatRequest) returns (stream
     //     StreamChatResponse);
