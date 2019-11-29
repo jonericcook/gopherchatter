@@ -11,7 +11,7 @@ import "google/protobuf/empty.proto";
 //     string content = 4;
 // }
 
-// message Friend {
+// message Contact {
 //     string user_id = 1;
 //     string user_name = 2;
 // }
@@ -124,41 +124,52 @@ message CreateGroupChatResponse {
   //     string message = 4;
   // }
 
-  // message GetFriendsListRequest {
+  // message GetContactsListRequest {
   //     string user_id = 1;
   // }
 
-  // message GetFriendsListResponse {
+  // message GetContactsListResponse {
   //     string user_id = 1;
-  //     repeated Friend friends = 2;
+  //     repeated Contact contacts = 2;
   // }
 
-  // message SearchUserRequest {
-  //     string user_name = 1;
+  // message SearchContactRequest {
+  //     string contact_name = 1;
   // }
 
-  // message SearchUserResponse {
+  // message SearchContactResponse {
+  //     string contact_id = 1;
+  //     string contact_name = 2;
+  // }
+
+message AddContactRequest {
+  string user_id = 1;
+  string contact_id = 2;
+}
+
+  // message RemoveContactRequest {
   //     string user_id = 1;
-  //     string user_name = 2;
+  //     string contact_id = 2;
   // }
 
-  // message AddFriendRequest {
+  // message GetIndividualChatMessagesRequest {
   //     string user_id = 1;
-  //     string friend_id = 2;
+  //     string chat_id = 2;
   // }
 
-  // message RemoveFriendRequest {
-  //     string user_id = 1;
-  //     string friend_id = 2;
-  // }
-
-  // message StreamChatRequest {
-  //     string chat_id = 1;
-  // }
-
-  // message StreamChatResponse {
+  // message GetIndividualChatMessagesResponse {
   //     repeated Message messages = 1;
   // }
+
+  // message GetGroupChatMessagesRequest {
+  //     string user_id = 1;
+  //     string chat_id = 2;
+  // }
+
+  // message GetGroupChatMessagesResponse {
+  //     repeated Message messages = 1;
+  // }
+
 
   // message GetAllRequest {
   //     string user_id = 1;
@@ -166,15 +177,15 @@ message CreateGroupChatResponse {
 
   // message GetAllResponse {
   //     string user_id = 1;
-  //     repeated Friend friends = 2;
+  //     repeated Contact Ccntacts = 2;
   //     repeated string indivual_chat_ids = 3;
   //     repeated string group_chat_ids = 4;
   // }
 
-  service GopherChatter {
-    rpc Authenticate(AuthenticateRequest) returns (AuthenticateResponse);
+service GopherChatter {
+  rpc Authenticate(AuthenticateRequest) returns (AuthenticateResponse);
 
-    rpc CreateUser(CreateUserRequest) returns (google.protobuf.Empty);
+  rpc CreateUser(CreateUserRequest) returns (google.protobuf.Empty);
 
     //     rpc DeleteUser(DeleteUserRequest) returns (google.protobuf.Empty);
 
@@ -184,7 +195,7 @@ message CreateGroupChatResponse {
     //     rpc LeaveIndividualChat(LeaveIndividualChatRequest) returns
     //     (google.protobuf.Empty);
 
-    rpc CreateGroupChat(CreateGroupChatRequest) returns (CreateGroupChatResponse);
+  rpc CreateGroupChat(CreateGroupChatRequest) returns (CreateGroupChatResponse);
 
     //     rpc LeaveGroupChat(LeaveGroupChatRequest) returns
     //     (google.protobuf.Empty);
@@ -204,18 +215,18 @@ message CreateGroupChatResponse {
     //     rpc SendMessageToGroupChat(SendMessageToGroupChatRequest) returns
     //     (SendMessageToGroupChatResponse);
 
-    //     rpc GetFriendsList(GetFriendsListRequest) returns
-    //     (GetFriendsListResponse);
+    //     rpc GetContactsList(GetContactsListRequest) returns
+    //     (GetContactsListResponse);
 
     //     rpc SearchUser(SearchUserRequest) returns (SearchUserResponse);
 
-    //     rpc AddFriend(AddFriendRequest) returns (google.protobuf.Empty);
+  rpc AddContact(AddContactRequest) returns (google.protobuf.Empty);
 
-    //     rpc RemoveFriend(RemoveFriendRequest) returns
+    //     rpc RemoveContact(RemoveContactRequest) returns
     //     (google.protobuf.Empty);
 
     //     rpc StreamChat(StreamChatRequest) returns (stream
     //     StreamChatResponse);
 
     //     rpc GetAll(GetAllRequest) returns (GetAllResponse);
-  }
+}

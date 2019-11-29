@@ -28,7 +28,7 @@ import (
 
 type gopherChatterServer struct {
 	users           *mongo.Collection
-	friends         *mongo.Collection
+	contacts        *mongo.Collection
 	individualChats *mongo.Collection
 	groupChats      *mongo.Collection
 	messages        *mongo.Collection
@@ -147,6 +147,73 @@ func (gcs *gopherChatterServer) CreateGroupChat(ctx context.Context, req *gopher
 	}, nil
 }
 
+func (gcs *gopherChatterServer) AddContact(ctx context.Context, req *gopherchatterv0.AddContactRequest) (*empty.Empty, error) {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return nil, status.Errorf(
+			codes.Internal, "internal error",
+		)
+	}
+	tokenString := strings.TrimPrefix(md["authorization"][0], "Bearer ")
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, status.Errorf(
+				codes.Internal, "internal error",
+			)
+		}
+		return []byte("gopherchatter"), nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok && !token.Valid {
+		return nil, status.Errorf(
+			codes.Unauthenticated, "invalid token",
+		)
+	}
+	if claims["sub"] != req.GetUserId() {
+		return nil, status.Errorf(
+			codes.InvalidArgument, "subject in token must match user_id",
+		)
+	}
+	contactID, err := primitive.ObjectIDFromHex(req.GetContactId())
+	if err != nil {
+		return nil, status.Errorf(
+			codes.Internal, "internal error",
+		)
+	}
+	userID, err := primitive.ObjectIDFromHex(req.GetUserId())
+	if err != nil {
+		return nil, status.Errorf(
+			codes.Internal, "internal error",
+		)
+	}
+	var user bson.M
+	if err := gcs.users.FindOne(ctx, bson.M{"_id": contactID}).Decode(&user); err == nil {
+		return nil, status.Errorf(
+			codes.NotFound, "contact not found",
+		)
+	}
+
+	var contact bson.M
+	if err := gcs.contacts.FindOne(ctx, bson.M{"user_id": userID, "contact_id": contactID}).Decode(&contact); err == nil {
+		return nil, status.Errorf(
+			codes.NotFound, "already have as contact",
+		)
+	}
+	_, err = gcs.contacts.InsertOne(ctx, bson.D{
+		{Key: "user_id", Value: userID},
+		{Key: "contact_id", Value: contactID},
+	})
+	if err != nil {
+		return nil, status.Errorf(
+			codes.Internal, "internal error",
+		)
+	}
+	return &empty.Empty{}, nil
+}
+
 func main() {
 	mongoClient, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
 	if err != nil {
@@ -175,7 +242,7 @@ func main() {
 	grpcs := grpc.NewServer()
 	gcs := gopherChatterServer{
 		users:           db.Collection("users"),
-		friends:         db.Collection("friends"),
+		contacts:        db.Collection("contacts"),
 		individualChats: db.Collection("individualchats"),
 		groupChats:      db.Collection("groupchats"),
 		messages:        db.Collection("messages"),

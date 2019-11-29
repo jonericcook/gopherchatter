@@ -3,6 +3,7 @@ module github.com/jonericcook/gopherchatter
 go 1.13
 
 require (
+	gioui.org v0.0.0-20191126175243-2ca2e5462f16
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/golang/protobuf v1.3.2
