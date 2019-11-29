@@ -69,6 +69,7 @@ message CreateGroupChatResponse {
   string chat_id = 1;
   string chat_name = 2;
   string creator_id = 3;
+  repeated string member_ids = 4;
 }
 
   // message LeaveGroupChatRequest {
@@ -88,10 +89,10 @@ message CreateGroupChatResponse {
   //     repeated string chat_ids = 2;
   // }
 
-  // message AddUserToGroupChatRequest {
-  //     string creator_id = 1;
-  //     string user_id = 2;
-  // }
+message AddContactToGroupChatRequest {
+  string creator_id = 1;
+  string contact_id = 2;
+}
 
   // message RemoveUserFromGroupChatRequest {
   //     string creator_id = 1;
@@ -203,8 +204,7 @@ service GopherChatter {
     //     rpc DeleteGroupChat(DeleteGroupChatRequest) returns
     //     (google.protobuf.Empty);
 
-    //     rpc AddUserToGroupChat(AddUserToGroupChatRequest) returns
-    //     (google.protobuf.Empty);
+  rpc AddContactToGroupChat(AddContactToGroupChatRequest) returns (google.protobuf.Empty);
 
     //     rpc RemoveUserFromGroupChat(RemoveUserFromGroupChatRequest) returns
     //     (google.protobuf.Empty);

@@ -134,6 +134,7 @@ func (gcs *gopherChatterServer) CreateGroupChat(ctx context.Context, req *gopher
 	result, err := gcs.groupChats.InsertOne(ctx, bson.D{
 		{Key: "chat_name", Value: req.GetChatName()},
 		{Key: "creator_id", Value: creatorID},
+		{Key: "member_ids", Value: bson.A{creatorID}},
 	})
 	if err != nil {
 		return nil, status.Errorf(
@@ -144,6 +145,7 @@ func (gcs *gopherChatterServer) CreateGroupChat(ctx context.Context, req *gopher
 		ChatId:    result.InsertedID.(primitive.ObjectID).Hex(),
 		ChatName:  req.GetChatName(),
 		CreatorId: req.GetCreatorId(),
+		MemberIds: []string{req.GetCreatorId()},
 	}, nil
 }
 
@@ -267,6 +269,9 @@ func (gcs *gopherChatterServer) RemoveContact(ctx context.Context, req *gopherch
 			codes.NotFound, "contact not found",
 		)
 	}
+	return &empty.Empty{}, nil
+}
+func (gcs *gopherChatterServer) AddContactToGroupChat(ctx context.Context, req *gopherchatterv0.AddContactToGroupChatRequest) (*empty.Empty, error) {
 	return &empty.Empty{}, nil
 }
 
