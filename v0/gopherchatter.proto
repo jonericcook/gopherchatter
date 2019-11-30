@@ -90,8 +90,9 @@ message CreateGroupChatResponse {
   // }
 
 message AddContactToGroupChatRequest {
-  string creator_id = 1;
-  string contact_id = 2;
+  string chat_id = 1;
+  string creator_id = 2;
+  string contact_id = 3;
 }
 
   // message RemoveUserFromGroupChatRequest {
