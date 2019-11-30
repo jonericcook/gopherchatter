@@ -95,10 +95,11 @@ message AddContactToGroupChatRequest {
   string contact_id = 3;
 }
 
-  // message RemoveUserFromGroupChatRequest {
-  //     string creator_id = 1;
-  //     string user_id = 2;
-  // }
+message RemoveUserFromGroupChatRequest {
+  string chat_id = 1;
+  string creator_id = 2;
+  string contact_id = 3;
+}
 
   // message SendMessageToIndiviualChatRequest {
   //     string chat_id = 1;
@@ -207,8 +208,7 @@ service GopherChatter {
 
   rpc AddContactToGroupChat(AddContactToGroupChatRequest) returns (google.protobuf.Empty);
 
-    //     rpc RemoveUserFromGroupChat(RemoveUserFromGroupChatRequest) returns
-    //     (google.protobuf.Empty);
+  rpc RemoveUserFromGroupChat(RemoveUserFromGroupChatRequest) returns (google.protobuf.Empty);
 
     //     rpc SendMessageToIndiviualChat(SendMessageToIndiviualChatRequest)
     //     returns (SendMessageToIndiviualChatResponse);
