@@ -27,11 +27,12 @@ import (
 )
 
 type gopherChatterServer struct {
-	users           *mongo.Collection
-	contacts        *mongo.Collection
-	individualChats *mongo.Collection
-	groupChats      *mongo.Collection
-	messages        *mongo.Collection
+	users                  *mongo.Collection
+	contacts               *mongo.Collection
+	individualChats        *mongo.Collection
+	individualChatMessages *mongo.Collection
+	groupChats             *mongo.Collection
+	groupChatMessages      *mongo.Collection
 }
 
 func (gcs *gopherChatterServer) CreateUser(ctx context.Context, req *gopherchatterv0.CreateUserRequest) (*empty.Empty, error) {
@@ -120,12 +121,12 @@ func (gcs *gopherChatterServer) CreateGroupChat(ctx context.Context, req *gopher
 			codes.Unauthenticated, "invalid token",
 		)
 	}
-	if claims["sub"] != req.GetCreatorId() {
+	if claims["sub"] != req.GetAdminId() {
 		return nil, status.Errorf(
-			codes.InvalidArgument, "subject in token must match creator_id",
+			codes.InvalidArgument, "subject in token must match admin_id",
 		)
 	}
-	creatorID, err := primitive.ObjectIDFromHex(req.GetCreatorId())
+	adminID, err := primitive.ObjectIDFromHex(req.GetAdminId())
 	if err != nil {
 		return nil, status.Errorf(
 			codes.Internal, "internal error",
@@ -133,8 +134,8 @@ func (gcs *gopherChatterServer) CreateGroupChat(ctx context.Context, req *gopher
 	}
 	result, err := gcs.groupChats.InsertOne(ctx, bson.D{
 		{Key: "chat_name", Value: req.GetChatName()},
-		{Key: "creator_id", Value: creatorID},
-		{Key: "member_ids", Value: bson.A{creatorID}},
+		{Key: "admin_id", Value: adminID},
+		{Key: "member_ids", Value: bson.A{adminID}},
 	})
 	if err != nil {
 		return nil, status.Errorf(
@@ -144,8 +145,8 @@ func (gcs *gopherChatterServer) CreateGroupChat(ctx context.Context, req *gopher
 	return &gopherchatterv0.CreateGroupChatResponse{
 		ChatId:    result.InsertedID.(primitive.ObjectID).Hex(),
 		ChatName:  req.GetChatName(),
-		CreatorId: req.GetCreatorId(),
-		MemberIds: []string{req.GetCreatorId()},
+		AdminId:   req.GetAdminId(),
+		MemberIds: []string{req.GetAdminId()},
 	}, nil
 }
 
@@ -296,9 +297,9 @@ func (gcs *gopherChatterServer) AddContactToGroupChat(ctx context.Context, req *
 			codes.Unauthenticated, "invalid token",
 		)
 	}
-	if claims["sub"] != req.GetCreatorId() {
+	if claims["sub"] != req.GetAdminId() {
 		return nil, status.Errorf(
-			codes.InvalidArgument, "subject in token must match creator_id",
+			codes.InvalidArgument, "subject in token must match admin_id",
 		)
 	}
 	contactID, err := primitive.ObjectIDFromHex(req.GetContactId())
@@ -307,7 +308,7 @@ func (gcs *gopherChatterServer) AddContactToGroupChat(ctx context.Context, req *
 			codes.Internal, "internal error",
 		)
 	}
-	creatorID, err := primitive.ObjectIDFromHex(req.GetCreatorId())
+	adminID, err := primitive.ObjectIDFromHex(req.GetAdminId())
 	if err != nil {
 		return nil, status.Errorf(
 			codes.Internal, "internal error",
@@ -326,18 +327,18 @@ func (gcs *gopherChatterServer) AddContactToGroupChat(ctx context.Context, req *
 		)
 	}
 	var contact bson.M
-	if err := gcs.contacts.FindOne(ctx, bson.M{"user_id": creatorID, "contact_id": contactID}).Decode(&contact); err != nil {
+	if err := gcs.contacts.FindOne(ctx, bson.M{"user_id": adminID, "contact_id": contactID}).Decode(&contact); err != nil {
 		return nil, status.Errorf(
 			codes.NotFound, "not a contact",
 		)
 	}
-	if err := gcs.groupChats.FindOne(ctx, bson.M{"_id": chatID, "creator_id": creatorID, "member_ids": contactID}).Decode(&contact); err == nil {
+	if err := gcs.groupChats.FindOne(ctx, bson.M{"_id": chatID, "admin_id": adminID, "member_ids": contactID}).Decode(&contact); err == nil {
 		return nil, status.Errorf(
 			codes.InvalidArgument, "contact is already in group chat",
 		)
 	}
 	var updatedDocument bson.M
-	if err := gcs.groupChats.FindOneAndUpdate(ctx, bson.M{"_id": chatID, "creator_id": creatorID, "member_ids": creatorID}, bson.M{"$push": bson.M{"member_ids": contactID}}).Decode(&updatedDocument); err != nil {
+	if err := gcs.groupChats.FindOneAndUpdate(ctx, bson.M{"_id": chatID, "admin_id": adminID, "member_ids": adminID}, bson.M{"$push": bson.M{"member_ids": contactID}}).Decode(&updatedDocument); err != nil {
 		return nil, status.Errorf(
 			codes.Internal, "could not add to group chat",
 		)
@@ -345,7 +346,7 @@ func (gcs *gopherChatterServer) AddContactToGroupChat(ctx context.Context, req *
 	return &empty.Empty{}, nil
 }
 
-func (gcs *gopherChatterServer) RemoveUserFromGroupChat(ctx context.Context, req *gopherchatterv0.RemoveUserFromGroupChatRequest) (*empty.Empty, error) {
+func (gcs *gopherChatterServer) RemoveContactFromGroupChat(ctx context.Context, req *gopherchatterv0.RemoveContactFromGroupChatRequest) (*empty.Empty, error) {
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return nil, status.Errorf(
@@ -370,9 +371,9 @@ func (gcs *gopherChatterServer) RemoveUserFromGroupChat(ctx context.Context, req
 			codes.Unauthenticated, "invalid token",
 		)
 	}
-	if claims["sub"] != req.GetCreatorId() {
+	if claims["sub"] != req.GetAdminId() {
 		return nil, status.Errorf(
-			codes.InvalidArgument, "subject in token must match creator_id",
+			codes.InvalidArgument, "subject in token must match admin_id",
 		)
 	}
 	contactID, err := primitive.ObjectIDFromHex(req.GetContactId())
@@ -381,7 +382,7 @@ func (gcs *gopherChatterServer) RemoveUserFromGroupChat(ctx context.Context, req
 			codes.Internal, "internal error",
 		)
 	}
-	creatorID, err := primitive.ObjectIDFromHex(req.GetCreatorId())
+	adminID, err := primitive.ObjectIDFromHex(req.GetAdminId())
 	if err != nil {
 		return nil, status.Errorf(
 			codes.Internal, "internal error",
@@ -400,23 +401,93 @@ func (gcs *gopherChatterServer) RemoveUserFromGroupChat(ctx context.Context, req
 		)
 	}
 	var contact bson.M
-	if err := gcs.contacts.FindOne(ctx, bson.M{"user_id": creatorID, "contact_id": contactID}).Decode(&contact); err != nil {
-		return nil, status.Errorf(
-			codes.NotFound, "not a contact",
-		)
-	}
-	if err := gcs.groupChats.FindOne(ctx, bson.M{"_id": chatID, "creator_id": creatorID, "member_ids": contactID}).Decode(&contact); err != nil {
+	if err := gcs.groupChats.FindOne(ctx, bson.M{"_id": chatID, "admin_id": adminID, "member_ids": contactID}).Decode(&contact); err != nil {
 		return nil, status.Errorf(
 			codes.InvalidArgument, "contact not in group chat",
 		)
 	}
 	var updatedDocument bson.M
-	if err := gcs.groupChats.FindOneAndUpdate(ctx, bson.M{"_id": chatID, "creator_id": creatorID, "member_ids": creatorID}, bson.M{"$pull": bson.M{"member_ids": contactID}}).Decode(&updatedDocument); err != nil {
+	if err := gcs.groupChats.FindOneAndUpdate(ctx, bson.M{"_id": chatID, "admin_id": adminID, "member_ids": adminID}, bson.M{"$pull": bson.M{"member_ids": contactID}}).Decode(&updatedDocument); err != nil {
 		return nil, status.Errorf(
-			codes.Internal, "could not remove from group chat",
+			codes.Internal, "could not remove contact from group chat",
 		)
 	}
 	return &empty.Empty{}, nil
+}
+
+func (gcs *gopherChatterServer) SendMessageToGroupChat(ctx context.Context, req *gopherchatterv0.SendMessageToGroupChatRequest) (*gopherchatterv0.SendMessageToGroupChatResponse, error) {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return nil, status.Errorf(
+			codes.Internal, "internal error",
+		)
+	}
+	tokenString := strings.TrimPrefix(md["authorization"][0], "Bearer ")
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, status.Errorf(
+				codes.Internal, "internal error",
+			)
+		}
+		return []byte("gopherchatter"), nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok && !token.Valid {
+		return nil, status.Errorf(
+			codes.Unauthenticated, "invalid token",
+		)
+	}
+	if claims["sub"] != req.GetAuthorId() {
+		return nil, status.Errorf(
+			codes.InvalidArgument, "subject in token must match author_id",
+		)
+	}
+	authorID, err := primitive.ObjectIDFromHex(req.GetAuthorId())
+	if err != nil {
+		return nil, status.Errorf(
+			codes.Internal, "internal error",
+		)
+	}
+	chatID, err := primitive.ObjectIDFromHex(req.GetChatId())
+	if err != nil {
+		return nil, status.Errorf(
+			codes.Internal, "internal error",
+		)
+	}
+	var user bson.M
+	if err := gcs.users.FindOne(ctx, bson.M{"_id": authorID}).Decode(&user); err != nil {
+		return nil, status.Errorf(
+			codes.NotFound, "user not found",
+		)
+	}
+	var groupChat bson.M
+	if err := gcs.groupChats.FindOne(ctx, bson.M{"_id": chatID, "member_ids": authorID}).Decode(&groupChat); err != nil {
+		return nil, status.Errorf(
+			codes.InvalidArgument, "not in group chat",
+		)
+	}
+	createdTimestamp := primitive.NewObjectID().Timestamp()
+	result, err := gcs.groupChatMessages.InsertOne(ctx, bson.D{
+		{Key: "chat_id", Value: chatID},
+		{Key: "author_id", Value: authorID},
+		{Key: "content", Value: req.GetContent()},
+		{Key: "created_timestamp", Value: createdTimestamp},
+	})
+	if err != nil {
+		return nil, status.Errorf(
+			codes.Internal, "internal error",
+		)
+	}
+	return &gopherchatterv0.SendMessageToGroupChatResponse{
+		MessageId: result.InsertedID.(primitive.ObjectID).Hex(),
+		ChatId:    req.GetChatId(),
+		AuthorId:  req.GetAuthorId(),
+		Content:   req.GetContent(),
+	}, nil
+
 }
 
 func main() {
@@ -446,11 +517,12 @@ func main() {
 	}
 	grpcs := grpc.NewServer()
 	gcs := gopherChatterServer{
-		users:           db.Collection("users"),
-		contacts:        db.Collection("contacts"),
-		individualChats: db.Collection("individualchats"),
-		groupChats:      db.Collection("groupchats"),
-		messages:        db.Collection("messages"),
+		users:                  db.Collection("users"),
+		contacts:               db.Collection("contacts"),
+		individualChats:        db.Collection("individualchats"),
+		groupChats:             db.Collection("groupchats"),
+		groupChatMessages:      db.Collection("groupchatmessages"),
+		individualChatMessages: db.Collection("individualchatmessages"),
 	}
 	gopherchatterv0.RegisterGopherChatterServer(grpcs, &gcs)
 	go func() {

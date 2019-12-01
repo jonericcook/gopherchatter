@@ -37,13 +37,13 @@ message CreateUserRequest {
 // }
 
 // message CreateIndividualChatRequest {
-//     string creator_id = 1;
+//     string admin_id = 1;
 //     string with_user_id = 2;
 // }
 
 // message CreateIndividualChatResponse {
 //     string chat_id = 1;
-//     string creator_id = 2;
+//     string admin_id = 2;
 //     string with_user_id = 3;
 // }
 
@@ -62,13 +62,13 @@ message CreateUserRequest {
 
 message CreateGroupChatRequest {
   string chat_name = 1;
-  string creator_id = 2;
+  string admin_id = 2;
 }
 
 message CreateGroupChatResponse {
   string chat_id = 1;
   string chat_name = 2;
-  string creator_id = 3;
+  string admin_id = 3;
   repeated string member_ids = 4;
 }
 
@@ -91,13 +91,13 @@ message CreateGroupChatResponse {
 
 message AddContactToGroupChatRequest {
   string chat_id = 1;
-  string creator_id = 2;
+  string admin_id = 2;
   string contact_id = 3;
 }
 
-message RemoveUserFromGroupChatRequest {
+message RemoveContactFromGroupChatRequest {
   string chat_id = 1;
-  string creator_id = 2;
+  string admin_id = 2;
   string contact_id = 3;
 }
 
@@ -114,18 +114,18 @@ message RemoveUserFromGroupChatRequest {
   //     string message = 4;
   // }
 
-  // message SendMessageToGroupChatRequest {
-  //     string chat_id = 1;
-  //     string author_id = 2;
-  //     string message = 3;
-  // }
+message SendMessageToGroupChatRequest {
+  string chat_id = 1;
+  string author_id = 2;
+  string content = 3;
+}
 
-  // message SendMessageToGroupChatResponse {
-  //     string message_id = 1;
-  //     string chat_id = 2;
-  //     string author_id = 3;
-  //     string message = 4;
-  // }
+message SendMessageToGroupChatResponse {
+  string message_id = 1;
+  string chat_id = 2;
+  string author_id = 3;
+  string content = 4;
+}
 
   // message GetContactsListRequest {
   //     string user_id = 1;
@@ -208,13 +208,12 @@ service GopherChatter {
 
   rpc AddContactToGroupChat(AddContactToGroupChatRequest) returns (google.protobuf.Empty);
 
-  rpc RemoveUserFromGroupChat(RemoveUserFromGroupChatRequest) returns (google.protobuf.Empty);
+  rpc RemoveContactFromGroupChat(RemoveContactFromGroupChatRequest) returns (google.protobuf.Empty);
 
     //     rpc SendMessageToIndiviualChat(SendMessageToIndiviualChatRequest)
     //     returns (SendMessageToIndiviualChatResponse);
 
-    //     rpc SendMessageToGroupChat(SendMessageToGroupChatRequest) returns
-    //     (SendMessageToGroupChatResponse);
+  rpc SendMessageToGroupChat(SendMessageToGroupChatRequest) returns (SendMessageToGroupChatResponse);
 
     //     rpc GetContactsList(GetContactsListRequest) returns
     //     (GetContactsListResponse);
