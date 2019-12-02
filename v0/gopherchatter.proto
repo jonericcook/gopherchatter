@@ -36,16 +36,14 @@ message CreateUserRequest {
 //     string user_id = 1;
 // }
 
-// message CreateIndividualChatRequest {
-//     string admin_id = 1;
-//     string with_user_id = 2;
-// }
+message CreateIndividualChatRequest {
+    string with_user_id = 1;
+}
 
-// message CreateIndividualChatResponse {
-//     string chat_id = 1;
-//     string admin_id = 2;
-//     string with_user_id = 3;
-// }
+message CreateIndividualChatResponse {
+    string chat_id = 1;
+    repeated string member_ids = 2;
+}
 
 // message LeaveIndividualChatRequest {
 //     string chat_id = 1;
@@ -192,8 +190,7 @@ service GopherChatter {
 
     //     rpc DeleteUser(DeleteUserRequest) returns (google.protobuf.Empty);
 
-    //     rpc CreateIndividualChat(CreateIndividualChatRequest) returns
-    //     (CreateIndividualChatResponse);
+  rpc CreateIndividualChat(CreateIndividualChatRequest) returns (CreateIndividualChatResponse);
 
     //     rpc LeaveIndividualChat(LeaveIndividualChatRequest) returns
     //     (google.protobuf.Empty);

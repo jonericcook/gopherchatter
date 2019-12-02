@@ -490,6 +490,69 @@ func (gcs *gopherChatterServer) SendMessageToGroupChat(ctx context.Context, req 
 
 }
 
+func (gcs *gopherChatterServer) CreateIndividualChat(ctx context.Context, req *gopherchatterv0.CreateIndividualChatRequest) (*gopherchatterv0.CreateIndividualChatResponse, error) {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return nil, status.Errorf(
+			codes.Internal, "internal error",
+		)
+	}
+	tokenString := strings.TrimPrefix(md["authorization"][0], "Bearer ")
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, status.Errorf(
+				codes.Internal, "internal error",
+			)
+		}
+		return []byte("gopherchatter"), nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok && !token.Valid {
+		return nil, status.Errorf(
+			codes.Unauthenticated, "invalid token",
+		)
+	}
+	userID, err := primitive.ObjectIDFromHex(claims["sub"].(string))
+	if err != nil {
+		return nil, status.Errorf(
+			codes.Internal, "internal error",
+		)
+	}
+	withUserID, err := primitive.ObjectIDFromHex(req.GetWithUserId())
+	if err != nil {
+		return nil, status.Errorf(
+			codes.Internal, "internal error",
+		)
+	}
+	var user bson.M
+	if err := gcs.users.FindOne(ctx, bson.M{"_id": withUserID}).Decode(&user); err != nil {
+		return nil, status.Errorf(
+			codes.NotFound, "user not found",
+		)
+	}
+	var contact bson.M
+	if err := gcs.contacts.FindOne(ctx, bson.M{"user_id": userID, "contact_id": withUserID}).Decode(&contact); err != nil {
+		return nil, status.Errorf(
+			codes.NotFound, "not a contact",
+		)
+	}
+	result, err := gcs.individualChats.InsertOne(ctx, bson.D{
+		{Key: "member_ids", Value: bson.A{userID, withUserID}},
+	})
+	if err != nil {
+		return nil, status.Errorf(
+			codes.Internal, "internal error",
+		)
+	}
+	return &gopherchatterv0.CreateIndividualChatResponse{
+		ChatId:    result.InsertedID.(primitive.ObjectID).Hex(),
+		MemberIds: []string{claims["sub"].(string), req.GetWithUserId()},
+	}, nil
+}
+
 func main() {
 	mongoClient, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
 	if err != nil {
