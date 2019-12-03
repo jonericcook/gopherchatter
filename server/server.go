@@ -553,6 +553,285 @@ func (gcs *gopherChatterServer) CreateIndividualChat(ctx context.Context, req *g
 	}, nil
 }
 
+func (gcs *gopherChatterServer) SendMessageToIndiviualChat(ctx context.Context, req *gopherchatterv0.SendMessageToIndividualChatRequest) (*gopherchatterv0.SendMessageToIndividualChatResponse, error) {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return nil, status.Errorf(
+			codes.Internal, "internal error",
+		)
+	}
+	tokenString := strings.TrimPrefix(md["authorization"][0], "Bearer ")
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, status.Errorf(
+				codes.Internal, "internal error",
+			)
+		}
+		return []byte("gopherchatter"), nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok && !token.Valid {
+		return nil, status.Errorf(
+			codes.Unauthenticated, "invalid token",
+		)
+	}
+	if claims["sub"] != req.GetAuthorId() {
+		return nil, status.Errorf(
+			codes.InvalidArgument, "subject in token must match author_id",
+		)
+	}
+	authorID, err := primitive.ObjectIDFromHex(req.GetAuthorId())
+	if err != nil {
+		return nil, status.Errorf(
+			codes.Internal, "internal error",
+		)
+	}
+	chatID, err := primitive.ObjectIDFromHex(req.GetChatId())
+	if err != nil {
+		return nil, status.Errorf(
+			codes.Internal, "internal error",
+		)
+	}
+	var user bson.M
+	if err := gcs.users.FindOne(ctx, bson.M{"_id": authorID}).Decode(&user); err != nil {
+		return nil, status.Errorf(
+			codes.NotFound, "user not found",
+		)
+	}
+	var individualChat bson.M
+	if err := gcs.individualChats.FindOne(ctx, bson.M{"_id": chatID, "member_ids": authorID}).Decode(&individualChat); err != nil {
+		return nil, status.Errorf(
+			codes.InvalidArgument, "not in individual chat",
+		)
+	}
+	createdTimestamp := primitive.NewObjectID().Timestamp()
+	result, err := gcs.individualChatMessages.InsertOne(ctx, bson.D{
+		{Key: "chat_id", Value: chatID},
+		{Key: "author_id", Value: authorID},
+		{Key: "content", Value: req.GetContent()},
+		{Key: "created_timestamp", Value: createdTimestamp},
+	})
+	if err != nil {
+		return nil, status.Errorf(
+			codes.Internal, "internal error",
+		)
+	}
+	return &gopherchatterv0.SendMessageToIndividualChatResponse{
+		MessageId: result.InsertedID.(primitive.ObjectID).Hex(),
+		ChatId:    req.GetChatId(),
+		AuthorId:  req.GetAuthorId(),
+		Content:   req.GetContent(),
+	}, nil
+}
+
+func (gcs *gopherChatterServer) GetContactsList(ctx context.Context, req *gopherchatterv0.GetContactsListRequest) (*gopherchatterv0.GetContactsListResponse, error) {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return nil, status.Errorf(
+			codes.Internal, "internal error",
+		)
+	}
+	tokenString := strings.TrimPrefix(md["authorization"][0], "Bearer ")
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, status.Errorf(
+				codes.Internal, "internal error",
+			)
+		}
+		return []byte("gopherchatter"), nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok && !token.Valid {
+		return nil, status.Errorf(
+			codes.Unauthenticated, "invalid token",
+		)
+	}
+	if claims["sub"] != req.GetUserId() {
+		return nil, status.Errorf(
+			codes.InvalidArgument, "subject in token must match user_id",
+		)
+	}
+	userID, err := primitive.ObjectIDFromHex(req.GetUserId())
+	if err != nil {
+		return nil, status.Errorf(
+			codes.Internal, "internal error",
+		)
+	}
+	var user bson.M
+	if err := gcs.users.FindOne(ctx, bson.M{"_id": userID}).Decode(&user); err != nil {
+		return nil, status.Errorf(
+			codes.NotFound, "user not found",
+		)
+	}
+	opts := options.Find().SetSort(bson.D{{Key: "user_name", Value: 1}})
+	cursor, err := gcs.contacts.Find(ctx, bson.M{"user_id": userID}, opts)
+	if err != nil {
+		return nil, status.Errorf(
+			codes.InvalidArgument, "not in individual chat",
+		)
+	}
+	var result []bson.M
+	if err = cursor.All(ctx, &result); err != nil {
+		return nil, status.Errorf(
+			codes.InvalidArgument, "not in individual chat",
+		)
+	}
+	var contacts []*gopherchatterv0.Contact
+	for i := range result {
+		var user bson.M
+		if err := gcs.users.FindOne(ctx, bson.M{"_id": result[i]["contact_id"]}).Decode(&user); err != nil {
+			return nil, status.Errorf(
+				codes.NotFound, "user not found",
+			)
+		}
+		userID := result[i]["contact_id"].(primitive.ObjectID).Hex()
+		userName := user["username"].(string)
+		c := gopherchatterv0.Contact{
+			UserId:   userID,
+			UserName: userName,
+		}
+		contacts = append(contacts, &c)
+	}
+	return &gopherchatterv0.GetContactsListResponse{
+		UserId:   req.GetUserId(),
+		Contacts: contacts,
+	}, nil
+}
+
+func (gcs *gopherChatterServer) GetIndividualChats(ctx context.Context, req *gopherchatterv0.GetIndividualChatsRequest) (*gopherchatterv0.GetIndividualChatsResponse, error) {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return nil, status.Errorf(
+			codes.Internal, "internal error",
+		)
+	}
+	tokenString := strings.TrimPrefix(md["authorization"][0], "Bearer ")
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, status.Errorf(
+				codes.Internal, "internal error",
+			)
+		}
+		return []byte("gopherchatter"), nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok && !token.Valid {
+		return nil, status.Errorf(
+			codes.Unauthenticated, "invalid token",
+		)
+	}
+	if claims["sub"] != req.GetUserId() {
+		return nil, status.Errorf(
+			codes.InvalidArgument, "subject in token must match user_id",
+		)
+	}
+	userID, err := primitive.ObjectIDFromHex(req.GetUserId())
+	if err != nil {
+		return nil, status.Errorf(
+			codes.Internal, "internal error",
+		)
+	}
+	var user bson.M
+	if err := gcs.users.FindOne(ctx, bson.M{"_id": userID}).Decode(&user); err != nil {
+		return nil, status.Errorf(
+			codes.NotFound, "user not found",
+		)
+	}
+	cursor, err := gcs.individualChats.Find(ctx, bson.M{"member_ids": userID})
+	if err != nil {
+		return nil, status.Errorf(
+			codes.InvalidArgument, "not in individual chat",
+		)
+	}
+	var result []bson.M
+	if err = cursor.All(ctx, &result); err != nil {
+		return nil, status.Errorf(
+			codes.InvalidArgument, "not in individual chat",
+		)
+	}
+	var chatIDs []string
+	for _, e := range result {
+		chatIDs = append(chatIDs, e["_id"].(primitive.ObjectID).Hex())
+	}
+	return &gopherchatterv0.GetIndividualChatsResponse{
+		UserId:  req.GetUserId(),
+		ChatIds: chatIDs,
+	}, nil
+}
+
+func (gcs *gopherChatterServer) GetGroupChats(ctx context.Context, req *gopherchatterv0.GetGroupChatsRequest) (*gopherchatterv0.GetGroupChatsResponse, error) {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return nil, status.Errorf(
+			codes.Internal, "internal error",
+		)
+	}
+	tokenString := strings.TrimPrefix(md["authorization"][0], "Bearer ")
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, status.Errorf(
+				codes.Internal, "internal error",
+			)
+		}
+		return []byte("gopherchatter"), nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok && !token.Valid {
+		return nil, status.Errorf(
+			codes.Unauthenticated, "invalid token",
+		)
+	}
+	if claims["sub"] != req.GetUserId() {
+		return nil, status.Errorf(
+			codes.InvalidArgument, "subject in token must match user_id",
+		)
+	}
+	userID, err := primitive.ObjectIDFromHex(req.GetUserId())
+	if err != nil {
+		return nil, status.Errorf(
+			codes.Internal, "internal error",
+		)
+	}
+	var user bson.M
+	if err := gcs.users.FindOne(ctx, bson.M{"_id": userID}).Decode(&user); err != nil {
+		return nil, status.Errorf(
+			codes.NotFound, "user not found",
+		)
+	}
+	cursor, err := gcs.groupChats.Find(ctx, bson.M{"member_ids": userID})
+	if err != nil {
+		return nil, status.Errorf(
+			codes.InvalidArgument, "not in group chat",
+		)
+	}
+	var result []bson.M
+	if err = cursor.All(ctx, &result); err != nil {
+		return nil, status.Errorf(
+			codes.InvalidArgument, "not in group chat",
+		)
+	}
+	var chatIDs []string
+	for _, e := range result {
+		chatIDs = append(chatIDs, e["_id"].(primitive.ObjectID).Hex())
+	}
+	return &gopherchatterv0.GetGroupChatsResponse{
+		UserId:  req.GetUserId(),
+		ChatIds: chatIDs,
+	}, nil
+}
+
 func main() {
 	mongoClient, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
 	if err != nil {
