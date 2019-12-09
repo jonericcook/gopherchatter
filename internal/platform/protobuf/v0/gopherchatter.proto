@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package gopherchatter.v0;
+option go_package = "gopherchatterv0";
+
+message CreateUserRequest {
+  string name = 1;
+  string password = 2;
+  string password_confirm = 3;
+}
+
+message CreateUserResponse {
+  string id = 1;
+  string name = 2;
+  string password_hash = 3;
+}
+
+service GopherChatter {
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
+}

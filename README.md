@@ -10,4 +10,4 @@ docker stop mongodb
 
 go version go1.13.4 darwin/amd64
 
-protoc v0/gopherchatter.proto --go_out=plugins=grpc:.
+protoc internal/platform/protobuf/v0/gopherchatter.proto --go_out=plugins=grpc:.

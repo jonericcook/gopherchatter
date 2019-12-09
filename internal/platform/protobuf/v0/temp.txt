@@ -1,0 +1,205 @@
+// import "google/protobuf/empty.proto";
+// import "google/protobuf/timestamp.proto";
+
+// message User {
+//   string id = 1;
+//   string name = 2;
+// }
+
+// message Message {
+//   string message_id = 1;
+//   string chat_id = 2;
+//   string author_id = 3;
+//   string content = 4;
+// }
+
+// message Contact {
+//     string user_id = 1;
+//     string user_name = 2;
+// }
+
+// message GroupChat {
+//   string chat_id = 1;
+//   string chat_name = 2;
+//   string admin_id = 3;
+//   repeated
+// }
+
+
+// message AuthenticateRequest {
+//   string username = 1;
+//   string password = 2;
+// }
+
+// message AuthenticateResponse {
+//   string token = 1;
+//   int64 expires_at = 2;
+// }
+
+// message DeleteUserRequest {
+//     string user_id = 1;
+// }
+
+// message CreateIndividualChatRequest {
+//     string with_user_id = 1;
+// }
+
+// message CreateIndividualChatResponse {
+//     string chat_id = 1;
+//     repeated string member_ids = 2;
+// }
+
+// message LeaveIndividualChatRequest {
+//     string chat_id = 1;
+// }
+
+// message GetIndividualChatsRequest {
+//   string user_id = 1;
+// }
+
+// message GetIndividualChatsResponse {
+//   string user_id = 1;
+//   repeated string chat_ids = 2;
+// }
+
+// message CreateGroupChatRequest {
+//   string chat_name = 1;
+//   string admin_id = 2;
+// }
+
+// message CreateGroupChatResponse {
+//   string chat_id = 1;
+//   string chat_name = 2;
+//   string admin_id = 3;
+//   repeated string member_ids = 4;
+// }
+
+  // message LeaveGroupChatRequest {
+  //     string chat_id = 1;
+  // }
+
+  // message DeleteGroupChatRequest {
+  //     string chat_id = 1;
+  // }
+
+// message GetGroupChatsRequest {
+//   string user_id = 1;
+// }
+
+// message GetGroupChatsResponse {
+//   string user_id = 1;
+//   repeated GroupChat group_chats = 2;
+// }
+
+// message AddContactToGroupChatRequest {
+//   string chat_id = 1;
+//   string admin_id = 2;
+//   string contact_id = 3;
+// }
+
+// message RemoveContactFromGroupChatRequest {
+//   string chat_id = 1;
+//   string admin_id = 2;
+//   string contact_id = 3;
+// }
+
+// message SendMessageToIndividualChatRequest {
+//   string chat_id = 1;
+//   string author_id = 2;
+//   string content = 3;
+// }
+
+// message SendMessageToIndividualChatResponse {
+//   string message_id = 1;
+//   string chat_id = 2;
+//   string author_id = 3;
+//   string content = 4;
+// }
+
+// message SendMessageToGroupChatRequest {
+//   string chat_id = 1;
+//   string author_id = 2;
+//   string content = 3;
+// }
+
+// message SendMessageToGroupChatResponse {
+//   string message_id = 1;
+//   string chat_id = 2;
+//   string author_id = 3;
+//   string content = 4;
+// }
+
+// message GetContactsListRequest {
+//   string user_id = 1;
+// }
+
+// message GetContactsListResponse {
+//   string user_id = 1;
+//   repeated Contact contacts = 2;
+// }
+
+// message AddContactRequest {
+//   string user_id = 1;
+//   string contact_id = 2;
+// }
+
+// message RemoveContactRequest {
+//   string user_id = 1;
+//   string contact_id = 2;
+// }
+
+// message GetIndividualChatMessagesRequest {
+//   string user_id = 1;
+//   string chat_id = 2;
+// }
+
+// message GetIndividualChatMessagesResponse {
+//   repeated Message messages = 1;
+// }
+
+// message GetGroupChatMessagesRequest {
+//     string user_id = 1;
+//     string chat_id = 2;
+// }
+
+// message GetGroupChatMessagesResponse {
+//     repeated Message messages = 1;
+// }
+
+
+  // rpc Authenticate(AuthenticateRequest) returns (AuthenticateResponse);
+
+  //     rpc DeleteUser(DeleteUserRequest) returns (google.protobuf.Empty);
+
+  // rpc CreateIndividualChat(CreateIndividualChatRequest) returns (CreateIndividualChatResponse);
+
+    //     rpc LeaveIndividualChat(LeaveIndividualChatRequest) returns
+    //     (google.protobuf.Empty);
+
+  // rpc CreateGroupChat(CreateGroupChatRequest) returns (CreateGroupChatResponse);
+
+    //     rpc LeaveGroupChat(LeaveGroupChatRequest) returns
+    //     (google.protobuf.Empty);
+
+    //     rpc DeleteGroupChat(DeleteGroupChatRequest) returns
+    //     (google.protobuf.Empty);
+
+  // rpc GetIndividualChats(GetIndividualChatsRequest) returns (GetIndividualChatsResponse);
+
+  // rpc GetIndividualChatMessages(GetIndividualChatMessagesRequest) returns (GetIndividualChatMessagesResponse);
+
+  // rpc GetGroupChats(GetGroupChatsRequest) returns (GetGroupChatsResponse);
+
+  // rpc AddContactToGroupChat(AddContactToGroupChatRequest) returns (google.protobuf.Empty);
+
+  // rpc RemoveContactFromGroupChat(RemoveContactFromGroupChatRequest) returns (google.protobuf.Empty);
+
+  // rpc SendMessageToIndiviualChat(SendMessageToIndividualChatRequest) returns (SendMessageToIndividualChatResponse);
+
+  // rpc SendMessageToGroupChat(SendMessageToGroupChatRequest) returns (SendMessageToGroupChatResponse);
+
+  // rpc GetContactsList(GetContactsListRequest) returns (GetContactsListResponse);
+
+  // rpc AddContact(AddContactRequest) returns (google.protobuf.Empty);
+
+  // rpc RemoveContact(RemoveContactRequest) returns (google.protobuf.Empty);
