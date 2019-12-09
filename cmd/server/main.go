@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -12,14 +13,15 @@ import (
 	"github.com/ardanlabs/conf"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
+	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
 	grpc_opentracing "github.com/grpc-ecosystem/go-grpc-middleware/tracing/opentracing"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
-	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	"github.com/jonericcook/gopherchatter/internal/platform/database"
 	gopherchatterv0 "github.com/jonericcook/gopherchatter/internal/platform/protobuf/v0"
 	"github.com/jonericcook/gopherchatter/internal/user"
 	"github.com/pkg/errors"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -59,6 +61,9 @@ func run() error {
 		}
 		GRPC struct {
 			Host string `conf:"default:localhost:50051"`
+		}
+		PROMETHEUS struct {
+			Host string `conf:"default:localhost:2112"`
 		}
 	}
 	if err := conf.Parse(os.Args[1:], "SALES", &cfg); err != nil {
@@ -138,6 +143,14 @@ func run() error {
 		db: db,
 	}
 	gopherchatterv0.RegisterGopherChatterServer(grpcs, &gcs)
+	grpc_prometheus.Register(grpcs)
+	http.Handle("/metrics", promhttp.Handler())
+
+	// Start the Prometheus server.
+	go func() {
+		log.Printf("main : Prometheus metrics at %s/metrics", cfg.PROMETHEUS.Host)
+		serverErrors <- http.ListenAndServe(cfg.PROMETHEUS.Host, nil)
+	}()
 
 	// Start the service listening for requests.
 	go func() {
