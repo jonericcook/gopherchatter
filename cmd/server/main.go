@@ -5,30 +5,25 @@ import (
 	"fmt"
 	"log"
 	"net"
-	// "net/http"
 	"os"
 	"os/signal"
 	"syscall"
 
 	"github.com/ardanlabs/conf"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
+	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
 	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
-	// grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
-	// grpc_opentracing "github.com/grpc-ecosystem/go-grpc-middleware/tracing/opentracing"
-	// grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"github.com/jonericcook/gopherchatter/internal/platform/database"
 	gopherchatterv0 "github.com/jonericcook/gopherchatter/internal/platform/protobuf/v0"
 	"github.com/jonericcook/gopherchatter/internal/user"
 	"github.com/pkg/errors"
-	// "github.com/prometheus/client_golang/prometheus/promhttp"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 )
 
 func (gcs *gopherChatterServer) CreateUser(ctx context.Context, req *gopherchatterv0.CreateUserRequest) (*gopherchatterv0.CreateUserResponse, error) {
-
 	nu := user.NewUser{
 		Name:            req.GetName(),
 		Password:        req.GetPassword(),
@@ -61,9 +56,6 @@ func run() error {
 		}
 		GRPC struct {
 			Host string `conf:"default:localhost:50051"`
-		}
-		PROMETHEUS struct {
-			Host string `conf:"default:localhost:2112"`
 		}
 	}
 	if err := conf.Parse(os.Args[1:], "SALES", &cfg); err != nil {
@@ -127,15 +119,21 @@ func run() error {
 	}
 	logger, _ := zap.NewProduction()
 	defer logger.Sync()
+	opts := []grpc_ctxtags.Option{
+		grpc_ctxtags.WithFieldExtractor(grpc_ctxtags.TagBasedRequestFieldExtractor("log_fields")),
+	}
+
+	exampleAuthFunc := func(ctx context.Context) (context.Context, error) {
+		t := grpc_ctxtags.Extract(ctx)
+		log.Println()
+		return ctx, nil
+	}
 	grpcs := grpc.NewServer(
 		grpc.UnaryInterceptor(
 			grpc_middleware.ChainUnaryServer(
-				grpc_ctxtags.UnaryServerInterceptor(),
-				// grpc_opentracing.UnaryServerInterceptor(),
-				// grpc_prometheus.UnaryServerInterceptor,
+				grpc_ctxtags.UnaryServerInterceptor(opts...),
 				grpc_zap.UnaryServerInterceptor(logger),
-				// grpc_auth.UnaryServerInterceptor(myAuthFunction),
-				// grpc_recovery.UnaryServerInterceptor(),
+				grpc_auth.UnaryServerInterceptor(exampleAuthFunc),
 			),
 		),
 	)
@@ -143,14 +141,6 @@ func run() error {
 		db: db,
 	}
 	gopherchatterv0.RegisterGopherChatterServer(grpcs, &gcs)
-	// grpc_prometheus.Register(grpcs)
-	// http.Handle("/metrics", promhttp.Handler())
-
-	// Start the Prometheus server.
-	// go func() {
-	// 	log.Printf("main : Prometheus metrics at %s/metrics", cfg.PROMETHEUS.Host)
-	// 	serverErrors <- http.ListenAndServe(cfg.PROMETHEUS.Host, nil)
-	// }()
 
 	// Start the service listening for requests.
 	go func() {
