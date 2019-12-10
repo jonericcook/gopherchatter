@@ -117,3 +117,19 @@ func Create(ctx context.Context, db *mongo.Database, nu NewUser) (*User, error) 
 	u.ID = result.InsertedID.(primitive.ObjectID)
 	return &u, nil
 }
+
+// Authenticate authenticates a user based on their username and password
+func Authenticate(ctx context.Context, db *mongo.Database, a AuthUser) (*User, error) {
+	var u User
+	if err := db.Collection(usersCollection).FindOne(ctx, bson.M{"name": a.Name}).Decode(&u); err != nil {
+		return nil, status.Errorf(
+			codes.InvalidArgument, "username or password is incorrect",
+		)
+	}
+	if err := bcrypt.CompareHashAndPassword([]byte(u.PasswordHash), []byte(a.Password)); err != nil {
+		return nil, status.Errorf(
+			codes.InvalidArgument, "username or password is incorrect",
+		)
+	}
+	return &u, nil
+}

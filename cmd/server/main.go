@@ -8,12 +8,16 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/ardanlabs/conf"
+	"github.com/dgrijalva/jwt-go"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
 	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
+	"github.com/jonericcook/gopherchatter/internal/group"
+	"github.com/jonericcook/gopherchatter/internal/middleware"
 	"github.com/jonericcook/gopherchatter/internal/platform/database"
 	gopherchatterv0 "github.com/jonericcook/gopherchatter/internal/platform/protobuf/v0"
 	"github.com/jonericcook/gopherchatter/internal/user"
@@ -21,7 +25,39 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
+
+func (gcs *gopherChatterServer) Authenticate(ctx context.Context, req *gopherchatterv0.AuthenticateRequest) (*gopherchatterv0.AuthenticateResponse, error) {
+	ua := user.AuthUser{
+		Name:     req.GetUsername(),
+		Password: req.GetPassword(),
+	}
+	u, err := user.Authenticate(ctx, gcs.db, ua)
+	if err != nil {
+		return nil, err
+	}
+	signingKey := []byte("gopherchatter")
+	expiresAt := time.Now().Add(12 * time.Hour).Unix()
+	claims := &jwt.StandardClaims{
+		Subject:   u.ID.Hex(),
+		IssuedAt:  time.Now().Unix(),
+		ExpiresAt: expiresAt,
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	log.Println(token)
+	ss, err := token.SignedString(signingKey)
+	if err != nil {
+		return nil, status.Errorf(
+			codes.Unauthenticated, "username or password is incorrect",
+		)
+	}
+	return &gopherchatterv0.AuthenticateResponse{
+		Token:     ss,
+		ExpiresAt: expiresAt,
+	}, nil
+}
 
 func (gcs *gopherChatterServer) CreateUser(ctx context.Context, req *gopherchatterv0.CreateUserRequest) (*gopherchatterv0.CreateUserResponse, error) {
 	nu := user.NewUser{
@@ -37,6 +73,25 @@ func (gcs *gopherChatterServer) CreateUser(ctx context.Context, req *gopherchatt
 		Id:           cu.ID.Hex(),
 		Name:         cu.Name,
 		PasswordHash: cu.PasswordHash,
+	}, nil
+}
+
+func (gcs *gopherChatterServer) CreateGroupChat(ctx context.Context, req *gopherchatterv0.CreateGroupChatRequest) (*gopherchatterv0.CreateGroupChatResponse, error) {
+	admin := grpc_ctxtags.Extract(ctx).Values()["auth.sub"].(string)
+	nc := group.NewChat{
+		Name:    req.GetName(),
+		Admin:   admin,
+		Members: []string{admin},
+	}
+	cc, err := group.CreateChat(ctx, gcs.db, nc)
+	if err != nil {
+		return nil, err
+	}
+	return &gopherchatterv0.CreateGroupChatResponse{
+		Id:      cc.ID,
+		Name:    cc.Name,
+		Admin:   cc.Admin,
+		Members: cc.Members,
 	}, nil
 }
 
@@ -123,17 +178,12 @@ func run() error {
 		grpc_ctxtags.WithFieldExtractor(grpc_ctxtags.TagBasedRequestFieldExtractor("log_fields")),
 	}
 
-	exampleAuthFunc := func(ctx context.Context) (context.Context, error) {
-		t := grpc_ctxtags.Extract(ctx)
-		log.Println()
-		return ctx, nil
-	}
 	grpcs := grpc.NewServer(
 		grpc.UnaryInterceptor(
 			grpc_middleware.ChainUnaryServer(
 				grpc_ctxtags.UnaryServerInterceptor(opts...),
 				grpc_zap.UnaryServerInterceptor(logger),
-				grpc_auth.UnaryServerInterceptor(exampleAuthFunc),
+				grpc_auth.UnaryServerInterceptor(middleware.Auth),
 			),
 		),
 	)

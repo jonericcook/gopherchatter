@@ -25,17 +25,6 @@
 //   repeated
 // }
 
-
-// message AuthenticateRequest {
-//   string username = 1;
-//   string password = 2;
-// }
-
-// message AuthenticateResponse {
-//   string token = 1;
-//   int64 expires_at = 2;
-// }
-
 // message DeleteUserRequest {
 //     string user_id = 1;
 // }
@@ -62,25 +51,13 @@
 //   repeated string chat_ids = 2;
 // }
 
-// message CreateGroupChatRequest {
-//   string chat_name = 1;
-//   string admin_id = 2;
+// message LeaveGroupChatRequest {
+//     string chat_id = 1;
 // }
 
-// message CreateGroupChatResponse {
-//   string chat_id = 1;
-//   string chat_name = 2;
-//   string admin_id = 3;
-//   repeated string member_ids = 4;
+// message DeleteGroupChatRequest {
+//     string chat_id = 1;
 // }
-
-  // message LeaveGroupChatRequest {
-  //     string chat_id = 1;
-  // }
-
-  // message DeleteGroupChatRequest {
-  //     string chat_id = 1;
-  // }
 
 // message GetGroupChatsRequest {
 //   string user_id = 1;
@@ -167,16 +144,12 @@
 // }
 
 
-  // rpc Authenticate(AuthenticateRequest) returns (AuthenticateResponse);
-
   //     rpc DeleteUser(DeleteUserRequest) returns (google.protobuf.Empty);
 
   // rpc CreateIndividualChat(CreateIndividualChatRequest) returns (CreateIndividualChatResponse);
 
     //     rpc LeaveIndividualChat(LeaveIndividualChatRequest) returns
     //     (google.protobuf.Empty);
-
-  // rpc CreateGroupChat(CreateGroupChatRequest) returns (CreateGroupChatResponse);
 
     //     rpc LeaveGroupChat(LeaveGroupChatRequest) returns
     //     (google.protobuf.Empty);
