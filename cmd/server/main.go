@@ -13,9 +13,9 @@ import (
 	"github.com/ardanlabs/conf"
 	"github.com/dgrijalva/jwt-go"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
-	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
-	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
+
 	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
+
 	"github.com/jonericcook/gopherchatter/internal/group"
 	"github.com/jonericcook/gopherchatter/internal/middleware"
 	"github.com/jonericcook/gopherchatter/internal/platform/database"
@@ -23,15 +23,17 @@ import (
 	"github.com/jonericcook/gopherchatter/internal/user"
 	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
+// ========================================================================================
+// Authentication
+
 func (gcs *gopherChatterServer) Authenticate(ctx context.Context, req *gopherchatterv0.AuthenticateRequest) (*gopherchatterv0.AuthenticateResponse, error) {
 	ua := user.AuthUser{
-		Name:     req.GetUsername(),
+		Username: req.GetUsername(),
 		Password: req.GetPassword(),
 	}
 	u, err := user.Authenticate(ctx, gcs.db, ua)
@@ -59,9 +61,12 @@ func (gcs *gopherChatterServer) Authenticate(ctx context.Context, req *gophercha
 	}, nil
 }
 
+// ========================================================================================
+// User
+
 func (gcs *gopherChatterServer) CreateUser(ctx context.Context, req *gopherchatterv0.CreateUserRequest) (*gopherchatterv0.CreateUserResponse, error) {
 	nu := user.NewUser{
-		Name:            req.GetName(),
+		Username:        req.GetUsername(),
 		Password:        req.GetPassword(),
 		PasswordConfirm: req.GetPasswordConfirm(),
 	}
@@ -70,16 +75,18 @@ func (gcs *gopherChatterServer) CreateUser(ctx context.Context, req *gopherchatt
 		return nil, err
 	}
 	return &gopherchatterv0.CreateUserResponse{
-		Id:           cu.ID.Hex(),
-		Name:         cu.Name,
+		UserId:       cu.ID.Hex(),
+		Username:     cu.Username,
 		PasswordHash: cu.PasswordHash,
 	}, nil
 }
 
+// ========================================================================================
+// Group
 func (gcs *gopherChatterServer) CreateGroupChat(ctx context.Context, req *gopherchatterv0.CreateGroupChatRequest) (*gopherchatterv0.CreateGroupChatResponse, error) {
 	admin := grpc_ctxtags.Extract(ctx).Values()["auth.sub"].(string)
 	nc := group.NewChat{
-		Name:    req.GetName(),
+		Name:    req.GetChatName(),
 		Admin:   admin,
 		Members: []string{admin},
 	}
@@ -88,12 +95,81 @@ func (gcs *gopherChatterServer) CreateGroupChat(ctx context.Context, req *gopher
 		return nil, err
 	}
 	return &gopherchatterv0.CreateGroupChatResponse{
-		Id:      cc.ID,
-		Name:    cc.Name,
-		Admin:   cc.Admin,
-		Members: cc.Members,
+		ChatId:      cc.ID,
+		ChatName:    cc.Name,
+		ChatAdmin:   cc.Admin,
+		ChatMembers: cc.Members,
 	}, nil
 }
+
+// ========================================================================================
+// Contact
+
+// func (gcs *gopherChatterServer) AddContact(ctx context.Context, req *gopherchatterv0.AddContactRequest) (*empty.Empty, error) {
+// 	md, ok := metadata.FromIncomingContext(ctx)
+// 	if !ok {
+// 		return nil, status.Errorf(
+// 			codes.Internal, "internal error",
+// 		)
+// 	}
+// 	tokenString := strings.TrimPrefix(md["authorization"][0], "Bearer ")
+// 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+// 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+// 			return nil, status.Errorf(
+// 				codes.Internal, "internal error",
+// 			)
+// 		}
+// 		return []byte("gopherchatter"), nil
+// 	})
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	claims, ok := token.Claims.(jwt.MapClaims)
+// 	if !ok && !token.Valid {
+// 		return nil, status.Errorf(
+// 			codes.Unauthenticated, "invalid token",
+// 		)
+// 	}
+// 	if claims["sub"] != req.GetUserId() {
+// 		return nil, status.Errorf(
+// 			codes.InvalidArgument, "subject in token must match user_id",
+// 		)
+// 	}
+// 	contactID, err := primitive.ObjectIDFromHex(req.GetContactId())
+// 	if err != nil {
+// 		return nil, status.Errorf(
+// 			codes.Internal, "internal error",
+// 		)
+// 	}
+// 	userID, err := primitive.ObjectIDFromHex(req.GetUserId())
+// 	if err != nil {
+// 		return nil, status.Errorf(
+// 			codes.Internal, "internal error",
+// 		)
+// 	}
+// 	var user bson.M
+// 	if err := gcs.users.FindOne(ctx, bson.M{"_id": contactID}).Decode(&user); err != nil {
+// 		return nil, status.Errorf(
+// 			codes.NotFound, "user not found",
+// 		)
+// 	}
+// 	var contact bson.M
+// 	if err := gcs.contacts.FindOne(ctx, bson.M{"user_id": userID, "contact_id": contactID}).Decode(&contact); err == nil {
+// 		return nil, status.Errorf(
+// 			codes.NotFound, "already have as contact",
+// 		)
+// 	}
+// 	_, err = gcs.contacts.InsertOne(ctx, bson.D{
+// 		{Key: "user_id", Value: userID},
+// 		{Key: "contact_id", Value: contactID},
+// 	})
+// 	if err != nil {
+// 		return nil, status.Errorf(
+// 			codes.Internal, "internal error",
+// 		)
+// 	}
+// 	return &empty.Empty{}, nil
+// }
 
 type gopherChatterServer struct {
 	db *mongo.Database
@@ -101,7 +177,7 @@ type gopherChatterServer struct {
 
 func run() error {
 
-	// =========================================================================
+	// ========================================================================================
 	// Configuration
 
 	var cfg struct {
@@ -125,7 +201,7 @@ func run() error {
 		return errors.Wrap(err, "parsing config")
 	}
 
-	// =========================================================================
+	// ========================================================================================
 	// App Starting
 
 	log.Println("main : Started : Application initializing")
@@ -137,7 +213,7 @@ func run() error {
 	}
 	log.Printf("main : Config :\n%v\n", out)
 
-	// =========================================================================
+	// ========================================================================================
 	// Start Database
 
 	log.Println("main : Started : Initializing database support")
@@ -154,7 +230,7 @@ func run() error {
 		db.Client().Disconnect(context.Background())
 	}()
 
-	// =========================================================================
+	// ========================================================================================
 	// Start GRPC Service
 
 	log.Println("main : Started : Initializing GRPC support")
@@ -172,18 +248,13 @@ func run() error {
 	if err != nil {
 		return errors.Wrap(err, "listening on network")
 	}
-	logger, _ := zap.NewProduction()
-	defer logger.Sync()
-	opts := []grpc_ctxtags.Option{
-		grpc_ctxtags.WithFieldExtractor(grpc_ctxtags.TagBasedRequestFieldExtractor("log_fields")),
-	}
 
 	grpcs := grpc.NewServer(
 		grpc.UnaryInterceptor(
 			grpc_middleware.ChainUnaryServer(
-				grpc_ctxtags.UnaryServerInterceptor(opts...),
-				grpc_zap.UnaryServerInterceptor(logger),
-				grpc_auth.UnaryServerInterceptor(middleware.Auth),
+				middleware.AddContextTags(),
+				middleware.AddLogging(),
+				middleware.AddAuthentication(),
 			),
 		),
 	)
@@ -198,7 +269,7 @@ func run() error {
 		serverErrors <- grpcs.Serve(listener)
 	}()
 
-	// =========================================================================
+	// ========================================================================================
 	// Shutdown
 
 	// Blocking main and waiting for shutdown.

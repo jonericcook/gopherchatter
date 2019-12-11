@@ -115,11 +115,6 @@
 //   repeated Contact contacts = 2;
 // }
 
-// message AddContactRequest {
-//   string user_id = 1;
-//   string contact_id = 2;
-// }
-
 // message RemoveContactRequest {
 //   string user_id = 1;
 //   string contact_id = 2;
@@ -172,7 +167,5 @@
   // rpc SendMessageToGroupChat(SendMessageToGroupChatRequest) returns (SendMessageToGroupChatResponse);
 
   // rpc GetContactsList(GetContactsListRequest) returns (GetContactsListResponse);
-
-  // rpc AddContact(AddContactRequest) returns (google.protobuf.Empty);
 
   // rpc RemoveContact(RemoveContactRequest) returns (google.protobuf.Empty);

@@ -13,8 +13,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// Auth here
-var Auth = func(ctx context.Context) (context.Context, error) {
+var authentication = func(ctx context.Context) (context.Context, error) {
 	m, ok := grpc.Method(ctx)
 	if !ok {
 		return nil, status.Errorf(
@@ -54,4 +53,9 @@ var Auth = func(ctx context.Context) (context.Context, error) {
 		grpc_ctxtags.Extract(ctx).Set("auth.sub", claims["sub"])
 		return ctx, nil
 	}
+}
+
+// AddAuthentication adds authentication to middleware.
+func AddAuthentication() grpc.UnaryServerInterceptor {
+	return grpc_auth.UnaryServerInterceptor(authentication)
 }

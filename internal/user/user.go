@@ -15,18 +15,18 @@ const usersCollection = "users"
 
 // Create inserts a new user into the database.
 func Create(ctx context.Context, db *mongo.Database, nu NewUser) (*User, error) {
-	if len(nu.Name) < 1 {
+	if len(nu.Username) < 1 {
 		return nil, status.Errorf(
 			codes.InvalidArgument, "name must be at least 1 character",
 		)
 	}
-	if len(nu.Name) > 12 {
+	if len(nu.Username) > 12 {
 		return nil, status.Errorf(
 			codes.InvalidArgument, "name must be at max 12 characters",
 		)
 	}
 	var foundNonLowerCaseInUsernane bool
-	for _, c := range nu.Name {
+	for _, c := range nu.Username {
 		if int(c) < 97 || int(c) > 122 {
 			foundNonLowerCaseInUsernane = true
 		}
@@ -93,7 +93,7 @@ func Create(ctx context.Context, db *mongo.Database, nu NewUser) (*User, error) 
 		)
 	}
 	var user User
-	if err := db.Collection(usersCollection).FindOne(ctx, bson.M{"name": nu.Name}).Decode(&user); err == nil {
+	if err := db.Collection(usersCollection).FindOne(ctx, bson.M{"username": nu.Username}).Decode(&user); err == nil {
 		return nil, status.Errorf(
 			codes.AlreadyExists, "name already exists",
 		)
@@ -105,7 +105,7 @@ func Create(ctx context.Context, db *mongo.Database, nu NewUser) (*User, error) 
 		)
 	}
 	u := User{
-		Name:         nu.Name,
+		Username:     nu.Username,
 		PasswordHash: string(hash),
 	}
 	result, err := db.Collection(usersCollection).InsertOne(ctx, u)
@@ -121,7 +121,7 @@ func Create(ctx context.Context, db *mongo.Database, nu NewUser) (*User, error) 
 // Authenticate authenticates a user based on their username and password
 func Authenticate(ctx context.Context, db *mongo.Database, a AuthUser) (*User, error) {
 	var u User
-	if err := db.Collection(usersCollection).FindOne(ctx, bson.M{"name": a.Name}).Decode(&u); err != nil {
+	if err := db.Collection(usersCollection).FindOne(ctx, bson.M{"username": a.Username}).Decode(&u); err != nil {
 		return nil, status.Errorf(
 			codes.InvalidArgument, "username or password is incorrect",
 		)
