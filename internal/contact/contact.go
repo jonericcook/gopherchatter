@@ -26,7 +26,7 @@ func Add(ctx context.Context, db *mongo.Database, c Contact) (*Contact, error) {
 	result, err := db.Collection(contactsCollection).InsertOne(ctx, c)
 	if err != nil {
 		return nil, status.Errorf(
-			codes.Internal, "internal error",
+			codes.Internal, "adding contact",
 		)
 	}
 	c.ID = result.InsertedID.(primitive.ObjectID)

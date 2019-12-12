@@ -17,7 +17,7 @@ var authentication = func(ctx context.Context) (context.Context, error) {
 	m, ok := grpc.Method(ctx)
 	if !ok {
 		return nil, status.Errorf(
-			codes.Internal, "internal error",
+			codes.Internal, "getting grpc method",
 		)
 	}
 	s := strings.Split(m, "/")
@@ -36,7 +36,7 @@ var authentication = func(ctx context.Context) (context.Context, error) {
 		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, status.Errorf(
-					codes.Internal, "internal error",
+					codes.InvalidArgument, "token signing method",
 				)
 			}
 			return []byte("gopherchatter super secret"), nil

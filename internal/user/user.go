@@ -129,7 +129,7 @@ func Create(ctx context.Context, db *mongo.Database, u User) (*User, error) {
 	result, err := db.Collection(usersCollection).InsertOne(ctx, u)
 	if err != nil {
 		return nil, status.Errorf(
-			codes.Internal, "internal error",
+			codes.Internal, "creating user",
 		)
 	}
 	u.ID = result.InsertedID.(primitive.ObjectID)

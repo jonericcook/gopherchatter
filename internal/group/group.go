@@ -11,12 +11,12 @@ import (
 
 const groupChatCollection = "groupchats"
 
-// NewChat inserts a new group chat into the database.
-func NewChat(ctx context.Context, db *mongo.Database, c Chat) (*Chat, error) {
+// CreateChat inserts a new group chat into the database.
+func CreateChat(ctx context.Context, db *mongo.Database, c Chat) (*Chat, error) {
 	result, err := db.Collection(groupChatCollection).InsertOne(ctx, c)
 	if err != nil {
 		return nil, status.Errorf(
-			codes.Internal, "internal error",
+			codes.Internal, "creating group chat",
 		)
 	}
 	c.ID = result.InsertedID.(primitive.ObjectID)
