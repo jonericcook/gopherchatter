@@ -3,40 +3,39 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
-	"net"
-	"os"
-	"os/signal"
-	"syscall"
-	"time"
-
 	"github.com/ardanlabs/conf"
 	"github.com/dgrijalva/jwt-go"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
-
 	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
-
+	"github.com/jonericcook/gopherchatter/internal/contact"
 	"github.com/jonericcook/gopherchatter/internal/group"
 	"github.com/jonericcook/gopherchatter/internal/middleware"
 	"github.com/jonericcook/gopherchatter/internal/platform/database"
 	gopherchatterv0 "github.com/jonericcook/gopherchatter/internal/platform/protobuf/v0"
 	"github.com/jonericcook/gopherchatter/internal/user"
 	"github.com/pkg/errors"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"log"
+	"net"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 )
 
 // ========================================================================================
 // Authentication
 
 func (gcs *gopherChatterServer) Authenticate(ctx context.Context, req *gopherchatterv0.AuthenticateRequest) (*gopherchatterv0.AuthenticateResponse, error) {
-	ua := user.AuthUser{
+	uc := user.Credentials{
 		Username: req.GetUsername(),
 		Password: req.GetPassword(),
 	}
-	u, err := user.Authenticate(ctx, gcs.db, ua)
+	u, err := user.Authenticate(ctx, gcs.db, uc)
 	if err != nil {
 		return nil, err
 	}
@@ -65,111 +64,83 @@ func (gcs *gopherChatterServer) Authenticate(ctx context.Context, req *gophercha
 // User
 
 func (gcs *gopherChatterServer) CreateUser(ctx context.Context, req *gopherchatterv0.CreateUserRequest) (*gopherchatterv0.CreateUserResponse, error) {
-	nu := user.NewUser{
+	un := user.NewUser{
 		Username:        req.GetUsername(),
 		Password:        req.GetPassword(),
 		PasswordConfirm: req.GetPasswordConfirm(),
 	}
-	cu, err := user.Create(ctx, gcs.db, nu)
+	uc, err := user.Create(ctx, gcs.db, un)
 	if err != nil {
 		return nil, err
 	}
 	return &gopherchatterv0.CreateUserResponse{
-		UserId:       cu.ID.Hex(),
-		Username:     cu.Username,
-		PasswordHash: cu.PasswordHash,
+		UserId:       uc.ID.Hex(),
+		Username:     uc.Username,
+		PasswordHash: uc.PasswordHash,
 	}, nil
 }
 
 // ========================================================================================
 // Group
 func (gcs *gopherChatterServer) CreateGroupChat(ctx context.Context, req *gopherchatterv0.CreateGroupChatRequest) (*gopherchatterv0.CreateGroupChatResponse, error) {
-	admin := grpc_ctxtags.Extract(ctx).Values()["auth.sub"].(string)
-	nc := group.NewChat{
-		Name:    req.GetChatName(),
-		Admin:   admin,
-		Members: []string{admin},
+	adminID, err := primitive.ObjectIDFromHex(grpc_ctxtags.Extract(ctx).Values()["auth.sub"].(string))
+	if err != nil {
+		return nil, status.Errorf(
+			codes.Internal, "internal error",
+		)
 	}
-	cc, err := group.CreateChat(ctx, gcs.db, nc)
+	gc := group.Chat{
+		Name:  req.GetChatName(),
+		Admin: adminID,
+		Members: []primitive.ObjectID{
+			adminID,
+		},
+	}
+	gnc, err := group.NewChat(ctx, gcs.db, gc)
 	if err != nil {
 		return nil, err
 	}
+	var cm []string
+	for _, e := range gnc.Members {
+		cm = append(cm, e.Hex())
+	}
 	return &gopherchatterv0.CreateGroupChatResponse{
-		ChatId:      cc.ID,
-		ChatName:    cc.Name,
-		ChatAdmin:   cc.Admin,
-		ChatMembers: cc.Members,
+		ChatId:      gnc.ID.Hex(),
+		ChatName:    gnc.Name,
+		ChatAdmin:   gnc.Admin.Hex(),
+		ChatMembers: cm,
 	}, nil
 }
 
 // ========================================================================================
 // Contact
 
-// func (gcs *gopherChatterServer) AddContact(ctx context.Context, req *gopherchatterv0.AddContactRequest) (*empty.Empty, error) {
-// 	md, ok := metadata.FromIncomingContext(ctx)
-// 	if !ok {
-// 		return nil, status.Errorf(
-// 			codes.Internal, "internal error",
-// 		)
-// 	}
-// 	tokenString := strings.TrimPrefix(md["authorization"][0], "Bearer ")
-// 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-// 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-// 			return nil, status.Errorf(
-// 				codes.Internal, "internal error",
-// 			)
-// 		}
-// 		return []byte("gopherchatter"), nil
-// 	})
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	claims, ok := token.Claims.(jwt.MapClaims)
-// 	if !ok && !token.Valid {
-// 		return nil, status.Errorf(
-// 			codes.Unauthenticated, "invalid token",
-// 		)
-// 	}
-// 	if claims["sub"] != req.GetUserId() {
-// 		return nil, status.Errorf(
-// 			codes.InvalidArgument, "subject in token must match user_id",
-// 		)
-// 	}
-// 	contactID, err := primitive.ObjectIDFromHex(req.GetContactId())
-// 	if err != nil {
-// 		return nil, status.Errorf(
-// 			codes.Internal, "internal error",
-// 		)
-// 	}
-// 	userID, err := primitive.ObjectIDFromHex(req.GetUserId())
-// 	if err != nil {
-// 		return nil, status.Errorf(
-// 			codes.Internal, "internal error",
-// 		)
-// 	}
-// 	var user bson.M
-// 	if err := gcs.users.FindOne(ctx, bson.M{"_id": contactID}).Decode(&user); err != nil {
-// 		return nil, status.Errorf(
-// 			codes.NotFound, "user not found",
-// 		)
-// 	}
-// 	var contact bson.M
-// 	if err := gcs.contacts.FindOne(ctx, bson.M{"user_id": userID, "contact_id": contactID}).Decode(&contact); err == nil {
-// 		return nil, status.Errorf(
-// 			codes.NotFound, "already have as contact",
-// 		)
-// 	}
-// 	_, err = gcs.contacts.InsertOne(ctx, bson.D{
-// 		{Key: "user_id", Value: userID},
-// 		{Key: "contact_id", Value: contactID},
-// 	})
-// 	if err != nil {
-// 		return nil, status.Errorf(
-// 			codes.Internal, "internal error",
-// 		)
-// 	}
-// 	return &empty.Empty{}, nil
-// }
+func (gcs *gopherChatterServer) AddContact(ctx context.Context, req *gopherchatterv0.AddContactRequest) (*gopherchatterv0.AddContactResponse, error) {
+	ownerID, err := primitive.ObjectIDFromHex(grpc_ctxtags.Extract(ctx).Values()["auth.sub"].(string))
+	if err != nil {
+		return nil, status.Errorf(
+			codes.Internal, "internal error",
+		)
+	}
+	userID, err := primitive.ObjectIDFromHex(req.GetUserId())
+	if err != nil {
+		return nil, status.Errorf(
+			codes.Internal, "internal error",
+		)
+	}
+	c := contact.Contact{
+		OwnerID: ownerID,
+		UserID:  userID,
+	}
+	ca, err := contact.Add(ctx, gcs.db, c)
+	if err != nil {
+		return nil, err
+	}
+	return &gopherchatterv0.AddContactResponse{
+		UserId:    ca.UserID.Hex(),
+		ContactId: ca.ID.Hex(),
+	}, nil
+}
 
 type gopherChatterServer struct {
 	db *mongo.Database

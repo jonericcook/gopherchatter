@@ -16,8 +16,8 @@ type NewUser struct {
 	PasswordConfirm string
 }
 
-// AuthUser contains information needed to authenticate a user.
-type AuthUser struct {
+// Credentials contains information needed to authenticate a user.
+type Credentials struct {
 	Username string
 	Password string
 }

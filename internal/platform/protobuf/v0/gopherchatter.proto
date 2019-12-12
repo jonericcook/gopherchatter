@@ -48,14 +48,14 @@ message CreateGroupChatResponse {
 // ========================================================================================
 // Contact
 
-// message AddContactRequest {
-//   string user_id = 1;
-// }
+message AddContactRequest {
+  string user_id = 1;
+}
 
-// message AddContactResponse {
-//   string user_id = 1;
-//   string contact_id = 2;
-// }
+message AddContactResponse {
+  string user_id = 1;
+  string contact_id = 2;
+}
 
 // ========================================================================================
 // Service
@@ -64,5 +64,5 @@ service GopherChatter {
   rpc Authenticate(AuthenticateRequest) returns (AuthenticateResponse);
   rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
   rpc CreateGroupChat(CreateGroupChatRequest) returns (CreateGroupChatResponse);
-  // rpc AddContact(AddContactRequest) returns (AddContactResponse);
+  rpc AddContact(AddContactRequest) returns (AddContactResponse);
 }
