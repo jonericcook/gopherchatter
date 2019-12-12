@@ -35,14 +35,14 @@ func (gcs *gopherChatterServer) Authenticate(ctx context.Context, req *gophercha
 		Username: req.GetUsername(),
 		Password: req.GetPassword(),
 	}
-	u, err := user.Authenticate(ctx, gcs.db, uc)
+	ua, err := user.Authenticate(ctx, gcs.db, uc)
 	if err != nil {
 		return nil, err
 	}
-	signingKey := []byte("gopherchatter")
+	signingKey := []byte("gopherchatter super secret")
 	expiresAt := time.Now().Add(12 * time.Hour).Unix()
 	claims := &jwt.StandardClaims{
-		Subject:   u.ID.Hex(),
+		Subject:   ua.ID.Hex(),
 		IssuedAt:  time.Now().Unix(),
 		ExpiresAt: expiresAt,
 	}
@@ -64,12 +64,17 @@ func (gcs *gopherChatterServer) Authenticate(ctx context.Context, req *gophercha
 // User
 
 func (gcs *gopherChatterServer) CreateUser(ctx context.Context, req *gopherchatterv0.CreateUserRequest) (*gopherchatterv0.CreateUserResponse, error) {
-	un := user.NewUser{
+	if user.NameExists(ctx, gcs.db, req.GetUsername()) {
+		return nil, status.Errorf(
+			codes.AlreadyExists, "username already exists",
+		)
+	}
+	unu := user.NewUser{
 		Username:        req.GetUsername(),
 		Password:        req.GetPassword(),
 		PasswordConfirm: req.GetPasswordConfirm(),
 	}
-	uc, err := user.Create(ctx, gcs.db, un)
+	uc, err := user.Create(ctx, gcs.db, unu)
 	if err != nil {
 		return nil, err
 	}
@@ -80,10 +85,37 @@ func (gcs *gopherChatterServer) CreateUser(ctx context.Context, req *gopherchatt
 	}, nil
 }
 
+func (gcs *gopherChatterServer) SearchUsername(ctx context.Context, req *gopherchatterv0.SearchUsernameRequest) (*gopherchatterv0.SearchUsernameResponse, error) {
+	userID, err := primitive.ObjectIDFromHex(grpc_ctxtags.Extract(ctx).Values()["auth.sub"].(string))
+	if !user.IDExists(ctx, gcs.db, userID) {
+		return nil, status.Errorf(
+			codes.NotFound, "user id does not exist",
+		)
+	}
+	if err != nil {
+		return nil, status.Errorf(
+			codes.Internal, "internal error",
+		)
+	}
+	u, err := user.GetUsername(ctx, gcs.db, req.GetUsername())
+	if err != nil {
+		return nil, err
+	}
+	return &gopherchatterv0.SearchUsernameResponse{
+		UserId:   u.ID.Hex(),
+		Username: u.Username,
+	}, nil
+}
+
 // ========================================================================================
 // Group
 func (gcs *gopherChatterServer) CreateGroupChat(ctx context.Context, req *gopherchatterv0.CreateGroupChatRequest) (*gopherchatterv0.CreateGroupChatResponse, error) {
-	adminID, err := primitive.ObjectIDFromHex(grpc_ctxtags.Extract(ctx).Values()["auth.sub"].(string))
+	userID, err := primitive.ObjectIDFromHex(grpc_ctxtags.Extract(ctx).Values()["auth.sub"].(string))
+	if !user.IDExists(ctx, gcs.db, userID) {
+		return nil, status.Errorf(
+			codes.NotFound, "user id does not exist",
+		)
+	}
 	if err != nil {
 		return nil, status.Errorf(
 			codes.Internal, "internal error",
@@ -91,9 +123,9 @@ func (gcs *gopherChatterServer) CreateGroupChat(ctx context.Context, req *gopher
 	}
 	gc := group.Chat{
 		Name:  req.GetChatName(),
-		Admin: adminID,
+		Admin: userID,
 		Members: []primitive.ObjectID{
-			adminID,
+			userID,
 		},
 	}
 	gnc, err := group.NewChat(ctx, gcs.db, gc)
@@ -114,15 +146,24 @@ func (gcs *gopherChatterServer) CreateGroupChat(ctx context.Context, req *gopher
 
 // ========================================================================================
 // Contact
-
 func (gcs *gopherChatterServer) AddContact(ctx context.Context, req *gopherchatterv0.AddContactRequest) (*gopherchatterv0.AddContactResponse, error) {
 	ownerID, err := primitive.ObjectIDFromHex(grpc_ctxtags.Extract(ctx).Values()["auth.sub"].(string))
+	if !user.IDExists(ctx, gcs.db, ownerID) {
+		return nil, status.Errorf(
+			codes.NotFound, "owner id does not exist",
+		)
+	}
 	if err != nil {
 		return nil, status.Errorf(
 			codes.Internal, "internal error",
 		)
 	}
 	userID, err := primitive.ObjectIDFromHex(req.GetUserId())
+	if !user.IDExists(ctx, gcs.db, userID) {
+		return nil, status.Errorf(
+			codes.NotFound, "user id does not exist",
+		)
+	}
 	if err != nil {
 		return nil, status.Errorf(
 			codes.Internal, "internal error",

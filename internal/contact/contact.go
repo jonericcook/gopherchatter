@@ -12,14 +12,17 @@ import (
 
 const contactsCollection = "contacts"
 
-// Add inserts a new contact into the database for the specified user.
-func Add(ctx context.Context, db *mongo.Database, c Contact) (*Contact, error) {
+// Exists checks if a contact already exists.
+func Exists(ctx context.Context, db *mongo.Database, c Contact) bool {
 	var contact Contact
 	if err := db.Collection(contactsCollection).FindOne(ctx, bson.M{"owner_id": c.OwnerID, "user_id": c.UserID}).Decode(&contact); err == nil {
-		return nil, status.Errorf(
-			codes.NotFound, "contact already exists",
-		)
+		return false
 	}
+	return true
+}
+
+// Add inserts a new contact into the database for the specified user.
+func Add(ctx context.Context, db *mongo.Database, c Contact) (*Contact, error) {
 	result, err := db.Collection(contactsCollection).InsertOne(ctx, c)
 	if err != nil {
 		return nil, status.Errorf(

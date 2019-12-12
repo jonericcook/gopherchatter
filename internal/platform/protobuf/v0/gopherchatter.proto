@@ -31,6 +31,15 @@ message CreateUserResponse {
   string password_hash = 3;
 }
 
+message SearchUsernameRequest {
+  string username = 1;
+}
+
+message SearchUsernameResponse {
+  string user_id = 1;
+  string username = 2;
+}
+
 // ========================================================================================
 // Group
 
@@ -63,6 +72,7 @@ message AddContactResponse {
 service GopherChatter {
   rpc Authenticate(AuthenticateRequest) returns (AuthenticateResponse);
   rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
+  rpc SearchUsername(SearchUsernameRequest) returns (SearchUsernameResponse);
   rpc CreateGroupChat(CreateGroupChatRequest) returns (CreateGroupChatResponse);
   rpc AddContact(AddContactRequest) returns (AddContactResponse);
 }

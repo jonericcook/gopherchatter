@@ -39,7 +39,7 @@ var authentication = func(ctx context.Context) (context.Context, error) {
 					codes.Internal, "internal error",
 				)
 			}
-			return []byte("gopherchatter"), nil
+			return []byte("gopherchatter super secret"), nil
 		})
 		if err != nil {
 			return nil, err

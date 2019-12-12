@@ -13,6 +13,35 @@ import (
 
 const usersCollection = "users"
 
+// NameExists checks if a user exists.
+func NameExists(ctx context.Context, db *mongo.Database, username string) bool {
+	var user User
+	if err := db.Collection(usersCollection).FindOne(ctx, bson.M{"username": username}).Decode(&user); err != nil {
+		return false
+	}
+	return true
+}
+
+// IDExists checks if a user exists.
+func IDExists(ctx context.Context, db *mongo.Database, userID primitive.ObjectID) bool {
+	var user User
+	if err := db.Collection(usersCollection).FindOne(ctx, bson.M{"_id": userID}).Decode(&user); err != nil {
+		return false
+	}
+	return true
+}
+
+// GetUsername returns a user based off their username.
+func GetUsername(ctx context.Context, db *mongo.Database, username string) (*User, error) {
+	var user User
+	if err := db.Collection(usersCollection).FindOne(ctx, bson.M{"username": username}).Decode(&user); err != nil {
+		return nil, status.Errorf(
+			codes.NotFound, "username does not exist",
+		)
+	}
+	return &user, nil
+}
+
 // Create inserts a new user into the database.
 func Create(ctx context.Context, db *mongo.Database, nu NewUser) (*User, error) {
 	if len(nu.Username) < 1 {
@@ -90,12 +119,6 @@ func Create(ctx context.Context, db *mongo.Database, nu NewUser) (*User, error) 
 	if nu.Password != nu.PasswordConfirm {
 		return nil, status.Errorf(
 			codes.InvalidArgument, "password and password_confirm must match",
-		)
-	}
-	var user User
-	if err := db.Collection(usersCollection).FindOne(ctx, bson.M{"username": nu.Username}).Decode(&user); err == nil {
-		return nil, status.Errorf(
-			codes.AlreadyExists, "name already exists",
 		)
 	}
 	hash, err := bcrypt.GenerateFromPassword([]byte(nu.Password), bcrypt.DefaultCost)
