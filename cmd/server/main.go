@@ -3,6 +3,13 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
+	"net"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
 	"github.com/ardanlabs/conf"
 	"github.com/dgrijalva/jwt-go"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
@@ -16,15 +23,10 @@ import (
 	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"log"
-	"net"
-	"os"
-	"os/signal"
-	"syscall"
-	"time"
 )
 
 // ========================================================================================
@@ -74,7 +76,20 @@ func (gcs *gopherChatterServer) CreateUser(ctx context.Context, req *gopherchatt
 		Password:        req.GetPassword(),
 		PasswordConfirm: req.GetPasswordConfirm(),
 	}
-	uc, err := user.Create(ctx, gcs.db, unu)
+	if err := user.CheckFormat(ctx, gcs.db, unu); err != nil {
+		return nil, err
+	}
+	hash, err := bcrypt.GenerateFromPassword([]byte(req.GetPassword()), bcrypt.DefaultCost)
+	if err != nil {
+		return nil, status.Errorf(
+			codes.Internal, "internal error",
+		)
+	}
+	uu := user.User{
+		Username:     req.GetUsername(),
+		PasswordHash: string(hash),
+	}
+	uc, err := user.Create(ctx, gcs.db, uu)
 	if err != nil {
 		return nil, err
 	}
@@ -87,14 +102,14 @@ func (gcs *gopherChatterServer) CreateUser(ctx context.Context, req *gopherchatt
 
 func (gcs *gopherChatterServer) SearchUsername(ctx context.Context, req *gopherchatterv0.SearchUsernameRequest) (*gopherchatterv0.SearchUsernameResponse, error) {
 	userID, err := primitive.ObjectIDFromHex(grpc_ctxtags.Extract(ctx).Values()["auth.sub"].(string))
-	if !user.IDExists(ctx, gcs.db, userID) {
-		return nil, status.Errorf(
-			codes.NotFound, "user id does not exist",
-		)
-	}
 	if err != nil {
 		return nil, status.Errorf(
 			codes.Internal, "internal error",
+		)
+	}
+	if !user.IDExists(ctx, gcs.db, userID) {
+		return nil, status.Errorf(
+			codes.NotFound, "user id does not exist",
 		)
 	}
 	u, err := user.GetUsername(ctx, gcs.db, req.GetUsername())
@@ -111,14 +126,14 @@ func (gcs *gopherChatterServer) SearchUsername(ctx context.Context, req *gopherc
 // Group
 func (gcs *gopherChatterServer) CreateGroupChat(ctx context.Context, req *gopherchatterv0.CreateGroupChatRequest) (*gopherchatterv0.CreateGroupChatResponse, error) {
 	userID, err := primitive.ObjectIDFromHex(grpc_ctxtags.Extract(ctx).Values()["auth.sub"].(string))
-	if !user.IDExists(ctx, gcs.db, userID) {
-		return nil, status.Errorf(
-			codes.NotFound, "user id does not exist",
-		)
-	}
 	if err != nil {
 		return nil, status.Errorf(
 			codes.Internal, "internal error",
+		)
+	}
+	if !user.IDExists(ctx, gcs.db, userID) {
+		return nil, status.Errorf(
+			codes.NotFound, "user id does not exist",
 		)
 	}
 	gc := group.Chat{
@@ -148,30 +163,36 @@ func (gcs *gopherChatterServer) CreateGroupChat(ctx context.Context, req *gopher
 // Contact
 func (gcs *gopherChatterServer) AddContact(ctx context.Context, req *gopherchatterv0.AddContactRequest) (*gopherchatterv0.AddContactResponse, error) {
 	ownerID, err := primitive.ObjectIDFromHex(grpc_ctxtags.Extract(ctx).Values()["auth.sub"].(string))
+	if err != nil {
+		return nil, status.Errorf(
+			codes.Internal, "internal error",
+		)
+	}
 	if !user.IDExists(ctx, gcs.db, ownerID) {
 		return nil, status.Errorf(
 			codes.NotFound, "owner id does not exist",
 		)
 	}
+	userID, err := primitive.ObjectIDFromHex(req.GetUserId())
 	if err != nil {
 		return nil, status.Errorf(
 			codes.Internal, "internal error",
 		)
 	}
-	userID, err := primitive.ObjectIDFromHex(req.GetUserId())
 	if !user.IDExists(ctx, gcs.db, userID) {
 		return nil, status.Errorf(
 			codes.NotFound, "user id does not exist",
 		)
 	}
-	if err != nil {
-		return nil, status.Errorf(
-			codes.Internal, "internal error",
-		)
-	}
+
 	c := contact.Contact{
 		OwnerID: ownerID,
 		UserID:  userID,
+	}
+	if contact.Exists(ctx, gcs.db, c) {
+		return nil, status.Errorf(
+			codes.AlreadyExists, "already a contact",
+		)
 	}
 	ca, err := contact.Add(ctx, gcs.db, c)
 	if err != nil {
