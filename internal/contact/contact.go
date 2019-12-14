@@ -15,7 +15,7 @@ const contactsCollection = "contacts"
 // Exists checks if a contact already exists.
 func Exists(ctx context.Context, db *mongo.Database, c Contact) bool {
 	var contact Contact
-	if err := db.Collection(contactsCollection).FindOne(ctx, bson.M{"owner_id": c.OwnerID, "user_id": c.UserID}).Decode(&contact); err != nil {
+	if err := db.Collection(contactsCollection).FindOne(ctx, bson.M{"owner": c.Owner, "user": c.User}).Decode(&contact); err != nil {
 		return false
 	}
 	return true
