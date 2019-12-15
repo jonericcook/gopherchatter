@@ -220,6 +220,7 @@ func (gcs *gopherChatterServer) AddContactToGroupChat(ctx context.Context, req *
 	for _, e := range updatedChat.Members {
 		cm = append(cm, e.Hex())
 	}
+	cm = append(cm, userID.Hex())
 	return &gopherchatterv0.AddContactToGroupChatResponse{
 		ChatId:      updatedChat.ID.Hex(),
 		ChatName:    updatedChat.Name,
