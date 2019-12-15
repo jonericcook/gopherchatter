@@ -3,6 +3,7 @@ syntax = "proto3";
 package gopherchatter.v0;
 option go_package = "gopherchatterv0";
 
+
 // ========================================================================================
 // Authentication
 
@@ -54,6 +55,18 @@ message CreateGroupChatResponse {
   repeated string chat_members = 4;
 }
 
+message AddContactToGroupChatRequest {
+  string chat_id = 1;
+  string user_id = 2;
+}
+
+message AddContactToGroupChatResponse {
+  string chat_id = 1;
+  string chat_name = 2;
+  string chat_admin = 3;
+  repeated string chat_members = 4;
+}
+
 // ========================================================================================
 // Individual
 
@@ -86,6 +99,7 @@ service GopherChatter {
   rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
   rpc SearchUsername(SearchUsernameRequest) returns (SearchUsernameResponse);
   rpc CreateGroupChat(CreateGroupChatRequest) returns (CreateGroupChatResponse);
+  rpc AddContactToGroupChat(AddContactToGroupChatRequest) returns (AddContactToGroupChatResponse);
   rpc CreateIndividualChat(CreateIndividualChatRequest) returns (CreateIndividualChatResponse);
   rpc AddContact(AddContactRequest) returns (AddContactResponse);
 }

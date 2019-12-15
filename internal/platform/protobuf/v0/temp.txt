@@ -29,15 +29,6 @@
 //     string user_id = 1;
 // }
 
-// message CreateIndividualChatRequest {
-//     string with_user_id = 1;
-// }
-
-// message CreateIndividualChatResponse {
-//     string chat_id = 1;
-//     repeated string member_ids = 2;
-// }
-
 // message LeaveIndividualChatRequest {
 //     string chat_id = 1;
 // }
