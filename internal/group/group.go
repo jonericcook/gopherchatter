@@ -50,7 +50,18 @@ func AddMemberToChat(ctx context.Context, db *mongo.Database, chatID primitive.O
 	var chat Chat
 	if err := db.Collection(groupChatCollection).FindOneAndUpdate(ctx, bson.M{"_id": chatID}, bson.M{"$push": bson.M{"members": userID}}).Decode(&chat); err != nil {
 		return nil, status.Errorf(
-			codes.Internal, "adding to group chat",
+			codes.Internal, "adding member to group chat",
+		)
+	}
+	return &chat, nil
+}
+
+// RemoveMemberFromChat adds a member to a chat.
+func RemoveMemberFromChat(ctx context.Context, db *mongo.Database, chatID primitive.ObjectID, userID primitive.ObjectID) (*Chat, error) {
+	var chat Chat
+	if err := db.Collection(groupChatCollection).FindOneAndUpdate(ctx, bson.M{"_id": chatID}, bson.M{"$pull": bson.M{"members": userID}}).Decode(&chat); err != nil {
+		return nil, status.Errorf(
+			codes.Internal, "removing member from group chat",
 		)
 	}
 	return &chat, nil
