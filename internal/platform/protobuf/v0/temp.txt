@@ -1,3 +1,26 @@
+rpc RemoveMemberFromGroupChat(RemoveMemberFromGroupChatRequest) returns (RemoveMemberFromGroupChatResponse);
+
+message RemoveMemberFromGroupChatRequest {
+  string chat_id = 1;
+  string user_id = 2;
+}
+
+message RemoveMemberFromGroupChatResponse {
+  string chat_id = 1;
+  string chat_name = 2;
+  string chat_admin = 3;
+  repeated string chat_members = 4;
+}
+
+rpc GetGroupChats(GetGroupChatsRequest) returns (GetGroupChatsResponse);
+
+message GetGroupChatsRequest {}
+
+message GetGroupChatsResponse {
+  repeated GroupChat group_chats = 1;
+}
+
+
 // import "google/protobuf/empty.proto";
 // import "google/protobuf/timestamp.proto";
 
@@ -156,7 +179,5 @@
   // rpc SendMessageToIndiviualChat(SendMessageToIndividualChatRequest) returns (SendMessageToIndividualChatResponse);
 
   // rpc SendMessageToGroupChat(SendMessageToGroupChatRequest) returns (SendMessageToGroupChatResponse);
-
-  // rpc GetContactsList(GetContactsListRequest) returns (GetContactsListResponse);
 
   // rpc RemoveContact(RemoveContactRequest) returns (google.protobuf.Empty);

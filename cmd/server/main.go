@@ -229,68 +229,6 @@ func (gcs *gopherChatterServer) AddContactToGroupChat(ctx context.Context, req *
 	}, nil
 }
 
-func (gcs *gopherChatterServer) RemoveMemberFromGroupChat(ctx context.Context, req *gopherchatterv0.RemoveMemberFromGroupChatRequest) (*gopherchatterv0.RemoveMemberFromGroupChatResponse, error) {
-	authUserID, err := primitive.ObjectIDFromHex(grpc_ctxtags.Extract(ctx).Values()["auth.sub"].(string))
-	if err != nil {
-		return nil, status.Errorf(
-			codes.Internal, "converting to ObjectID",
-		)
-	}
-	if !user.IDExists(ctx, gcs.db, authUserID) {
-		return nil, status.Errorf(
-			codes.NotFound, "user id in token does not exist",
-		)
-	}
-	userID, err := primitive.ObjectIDFromHex(req.GetUserId())
-	if err != nil {
-		return nil, status.Errorf(
-			codes.Internal, "converting to ObjectID",
-		)
-	}
-	if !user.IDExists(ctx, gcs.db, userID) {
-		return nil, status.Errorf(
-			codes.NotFound, "user id does not exist",
-		)
-	}
-	chatID, err := primitive.ObjectIDFromHex(req.GetChatId())
-	if err != nil {
-		return nil, status.Errorf(
-			codes.Internal, "converting to ObjectID",
-		)
-	}
-	chat, err := group.GetChat(ctx, gcs.db, chatID)
-	if err != nil {
-		return nil, err
-	}
-	if authUserID != chat.Admin {
-		return nil, status.Errorf(
-			codes.PermissionDenied, "not authorized to remove member",
-		)
-	}
-	if !group.ChatHasMember(chat, userID) {
-		return nil, status.Errorf(
-			codes.AlreadyExists, "member not in chat",
-		)
-	}
-	updatedChat, err := group.RemoveMemberFromChat(ctx, gcs.db, chatID, userID)
-	if err != nil {
-		return nil, err
-	}
-	var cm []string
-	for _, e := range updatedChat.Members {
-		if e != userID {
-			cm = append(cm, e.Hex())
-		}
-
-	}
-	return &gopherchatterv0.RemoveMemberFromGroupChatResponse{
-		ChatId:      updatedChat.ID.Hex(),
-		ChatName:    updatedChat.Name,
-		ChatAdmin:   updatedChat.Admin.Hex(),
-		ChatMembers: cm,
-	}, nil
-}
-
 // ========================================================================================
 // Individual
 func (gcs *gopherChatterServer) CreateIndividualChat(ctx context.Context, req *gopherchatterv0.CreateIndividualChatRequest) (*gopherchatterv0.CreateIndividualChatResponse, error) {
@@ -392,6 +330,35 @@ func (gcs *gopherChatterServer) AddContact(ctx context.Context, req *gopherchatt
 	return &gopherchatterv0.AddContactResponse{
 		UserId:    ca.User.Hex(),
 		ContactId: ca.ID.Hex(),
+	}, nil
+}
+
+func (gcs *gopherChatterServer) GetContactsList(ctx context.Context, req *gopherchatterv0.GetContactsListRequest) (*gopherchatterv0.GetContactsListResponse, error) {
+	authUserID, err := primitive.ObjectIDFromHex(grpc_ctxtags.Extract(ctx).Values()["auth.sub"].(string))
+	if err != nil {
+		return nil, status.Errorf(
+			codes.Internal, "converting to ObjectID",
+		)
+	}
+	if !user.IDExists(ctx, gcs.db, authUserID) {
+		return nil, status.Errorf(
+			codes.NotFound, "user id in token does not exist",
+		)
+	}
+	cga, err := contact.GetAll(ctx, gcs.db, authUserID)
+	if err != nil {
+		return nil, err
+	}
+	var users []*gopherchatterv0.User
+	for _, e := range cga {
+		u, err := user.GetUserID(ctx, gcs.db, e.User)
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, &gopherchatterv0.User{UserId: u.ID.Hex(), Username: u.Username})
+	}
+	return &gopherchatterv0.GetContactsListResponse{
+		Users: users,
 	}, nil
 }
 

@@ -15,7 +15,8 @@ const groupChatCollection = "groupchats"
 // GetChat checks if a user exists.
 func GetChat(ctx context.Context, db *mongo.Database, chatID primitive.ObjectID) (*Chat, error) {
 	var chat Chat
-	if err := db.Collection(groupChatCollection).FindOne(ctx, bson.M{"_id": chatID}).Decode(&chat); err != nil {
+	filter := bson.M{"_id": chatID}
+	if err := db.Collection(groupChatCollection).FindOne(ctx, filter).Decode(&chat); err != nil {
 		return nil, status.Errorf(
 			codes.NotFound, "chat id does not exist",
 		)
@@ -48,7 +49,9 @@ func CreateChat(ctx context.Context, db *mongo.Database, c Chat) (*Chat, error) 
 // AddMemberToChat adds a member to a chat.
 func AddMemberToChat(ctx context.Context, db *mongo.Database, chatID primitive.ObjectID, userID primitive.ObjectID) (*Chat, error) {
 	var chat Chat
-	if err := db.Collection(groupChatCollection).FindOneAndUpdate(ctx, bson.M{"_id": chatID}, bson.M{"$push": bson.M{"members": userID}}).Decode(&chat); err != nil {
+	filter := bson.M{"_id": chatID}
+	update := bson.M{"$push": bson.M{"members": userID}}
+	if err := db.Collection(groupChatCollection).FindOneAndUpdate(ctx, filter, update).Decode(&chat); err != nil {
 		return nil, status.Errorf(
 			codes.Internal, "adding member to group chat",
 		)
@@ -59,7 +62,9 @@ func AddMemberToChat(ctx context.Context, db *mongo.Database, chatID primitive.O
 // RemoveMemberFromChat adds a member to a chat.
 func RemoveMemberFromChat(ctx context.Context, db *mongo.Database, chatID primitive.ObjectID, userID primitive.ObjectID) (*Chat, error) {
 	var chat Chat
-	if err := db.Collection(groupChatCollection).FindOneAndUpdate(ctx, bson.M{"_id": chatID}, bson.M{"$pull": bson.M{"members": userID}}).Decode(&chat); err != nil {
+	filter := bson.M{"_id": chatID}
+	update := bson.M{"$pull": bson.M{"members": userID}}
+	if err := db.Collection(groupChatCollection).FindOneAndUpdate(ctx, filter, update).Decode(&chat); err != nil {
 		return nil, status.Errorf(
 			codes.Internal, "removing member from group chat",
 		)

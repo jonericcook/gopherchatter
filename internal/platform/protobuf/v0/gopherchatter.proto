@@ -20,6 +20,11 @@ message AuthenticateResponse {
 // ========================================================================================
 // User
 
+message User {
+  string user_id = 1;
+  string username = 2;
+}
+
 message CreateUserRequest {
   string username = 1;
   string password = 2;
@@ -44,6 +49,13 @@ message SearchUsernameResponse {
 // ========================================================================================
 // Group
 
+message GroupChat {
+  string chat_id = 1;
+  string chat_name = 2;
+  string chat_admin = 3;
+  repeated string chat_members = 4;
+}
+
 message CreateGroupChatRequest {
   string chat_name = 1;
 }
@@ -67,20 +79,13 @@ message AddContactToGroupChatResponse {
   repeated string chat_members = 4;
 }
 
-message RemoveMemberFromGroupChatRequest {
-  string chat_id = 1;
-  string user_id = 2;
-}
-
-message RemoveMemberFromGroupChatResponse {
-  string chat_id = 1;
-  string chat_name = 2;
-  string chat_admin = 3;
-  repeated string chat_members = 4;
-}
-
 // ========================================================================================
 // Individual
+
+message IndividualChat {
+  string chat_id = 1;
+  repeated string chat_members = 2;
+}
 
 message CreateIndividualChatRequest {
   string user_id = 1;
@@ -103,6 +108,12 @@ message AddContactResponse {
   string contact_id = 2;
 }
 
+message GetContactsListRequest {}
+
+message GetContactsListResponse {
+  repeated User users = 1;
+}
+
 // ========================================================================================
 // Service
 
@@ -112,7 +123,7 @@ service GopherChatter {
   rpc SearchUsername(SearchUsernameRequest) returns (SearchUsernameResponse);
   rpc CreateGroupChat(CreateGroupChatRequest) returns (CreateGroupChatResponse);
   rpc AddContactToGroupChat(AddContactToGroupChatRequest) returns (AddContactToGroupChatResponse);
-  rpc RemoveMemberFromGroupChat(RemoveMemberFromGroupChatRequest) returns (RemoveMemberFromGroupChatResponse);
   rpc CreateIndividualChat(CreateIndividualChatRequest) returns (CreateIndividualChatResponse);
   rpc AddContact(AddContactRequest) returns (AddContactResponse);
+  rpc GetContactsList(GetContactsListRequest) returns (GetContactsListResponse);
 }

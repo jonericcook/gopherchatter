@@ -124,6 +124,17 @@ func GetUsername(ctx context.Context, db *mongo.Database, username string) (*Use
 	return &user, nil
 }
 
+// GetUserID returns a user based off their id.
+func GetUserID(ctx context.Context, db *mongo.Database, userID primitive.ObjectID) (*User, error) {
+	var user User
+	if err := db.Collection(usersCollection).FindOne(ctx, bson.M{"_id": userID}).Decode(&user); err != nil {
+		return nil, status.Errorf(
+			codes.NotFound, "user id does not exist",
+		)
+	}
+	return &user, nil
+}
+
 // Create inserts a new user into the database.
 func Create(ctx context.Context, db *mongo.Database, u User) (*User, error) {
 	result, err := db.Collection(usersCollection).InsertOne(ctx, u)
