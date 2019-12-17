@@ -51,3 +51,14 @@ func Add(ctx context.Context, db *mongo.Database, c Contact) (*Contact, error) {
 	c.ID = result.InsertedID.(primitive.ObjectID)
 	return &c, nil
 }
+
+// Remove removes the specified contact from the database for a user.
+func Remove(ctx context.Context, db *mongo.Database, c Contact) error {
+	filter := bson.M{"owner": c.Owner, "user": c.User}
+	if db.Collection(contactsCollection).FindOneAndDelete(ctx, filter).Err() != nil {
+		return status.Errorf(
+			codes.Internal, "removing contact",
+		)
+	}
+	return nil
+}

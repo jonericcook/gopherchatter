@@ -108,6 +108,12 @@ message AddContactResponse {
   string contact_id = 2;
 }
 
+message RemoveContactRequest {
+  string user_id = 1;
+}
+
+message RemoveContactResponse {}
+
 message GetContactsListRequest {}
 
 message GetContactsListResponse {
@@ -125,5 +131,6 @@ service GopherChatter {
   rpc AddContactToGroupChat(AddContactToGroupChatRequest) returns (AddContactToGroupChatResponse);
   rpc CreateIndividualChat(CreateIndividualChatRequest) returns (CreateIndividualChatResponse);
   rpc AddContact(AddContactRequest) returns (AddContactResponse);
+  rpc RemoveContact(RemoveContactRequest) returns (RemoveContactResponse);
   rpc GetContactsList(GetContactsListRequest) returns (GetContactsListResponse);
 }
