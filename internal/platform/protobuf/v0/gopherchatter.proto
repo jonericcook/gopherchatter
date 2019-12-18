@@ -47,66 +47,13 @@ message SearchUsernameResponse {
 }
 
 // ========================================================================================
-// Group
-
-message GroupChat {
-  string chat_id = 1;
-  string chat_name = 2;
-  string chat_admin = 3;
-  repeated string chat_members = 4;
-}
-
-message CreateGroupChatRequest {
-  string chat_name = 1;
-}
-
-message CreateGroupChatResponse {
-  string chat_id = 1;
-  string chat_name = 2;
-  string chat_admin = 3;
-  repeated string chat_members = 4;
-}
-
-message AddContactToGroupChatRequest {
-  string chat_id = 1;
-  string user_id = 2;
-}
-
-message AddContactToGroupChatResponse {
-  string chat_id = 1;
-  string chat_name = 2;
-  string chat_admin = 3;
-  repeated string chat_members = 4;
-}
-
-// ========================================================================================
-// Individual
-
-message IndividualChat {
-  string chat_id = 1;
-  repeated string chat_members = 2;
-}
-
-message CreateIndividualChatRequest {
-  string user_id = 1;
-}
-
-message CreateIndividualChatResponse {
-  string chat_id = 1;
-  repeated string chat_members = 2;
-}
-
-// ========================================================================================
 // Contact
 
 message AddContactRequest {
   string user_id = 1;
 }
 
-message AddContactResponse {
-  string user_id = 1;
-  string contact_id = 2;
-}
+message AddContactResponse {}
 
 message RemoveContactRequest {
   string user_id = 1;
@@ -121,16 +68,31 @@ message GetContactsListResponse {
 }
 
 // ========================================================================================
+// Chat
+
+message CreateChatRequest {
+  string chat_name = 1;
+  string chat_type = 2;
+  repeated string chat_members = 3;
+}
+
+message CreateChatResponse {
+  string chat_id = 1;
+  string chat_name = 2;
+  string chat_type = 3;
+  repeated string chat_admins = 4;
+  repeated string chat_members = 5;
+}
+
+// ========================================================================================
 // Service
 
 service GopherChatter {
   rpc Authenticate(AuthenticateRequest) returns (AuthenticateResponse);
   rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
   rpc SearchUsername(SearchUsernameRequest) returns (SearchUsernameResponse);
-  rpc CreateGroupChat(CreateGroupChatRequest) returns (CreateGroupChatResponse);
-  rpc AddContactToGroupChat(AddContactToGroupChatRequest) returns (AddContactToGroupChatResponse);
-  rpc CreateIndividualChat(CreateIndividualChatRequest) returns (CreateIndividualChatResponse);
   rpc AddContact(AddContactRequest) returns (AddContactResponse);
   rpc RemoveContact(RemoveContactRequest) returns (RemoveContactResponse);
   rpc GetContactsList(GetContactsListRequest) returns (GetContactsListResponse);
+  rpc CreateChat(CreateChatRequest) returns (CreateChatResponse);
 }

@@ -41,15 +41,14 @@ func GetAll(ctx context.Context, db *mongo.Database, userID primitive.ObjectID) 
 }
 
 // Add inserts a new contact into the database for the specified user.
-func Add(ctx context.Context, db *mongo.Database, c Contact) (*Contact, error) {
-	result, err := db.Collection(contactsCollection).InsertOne(ctx, c)
+func Add(ctx context.Context, db *mongo.Database, c Contact) error {
+	_, err := db.Collection(contactsCollection).InsertOne(ctx, c)
 	if err != nil {
-		return nil, status.Errorf(
+		return status.Errorf(
 			codes.Internal, "adding contact",
 		)
 	}
-	c.ID = result.InsertedID.(primitive.ObjectID)
-	return &c, nil
+	return nil
 }
 
 // Remove removes the specified contact from the database for a user.

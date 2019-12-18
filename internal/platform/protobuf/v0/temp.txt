@@ -1,3 +1,59 @@
+  rpc CreateGroupChat(CreateGroupChatRequest) returns (CreateGroupChatResponse);
+  rpc AddContactToGroupChat(AddContactToGroupChatRequest) returns (AddContactToGroupChatResponse);
+  rpc CreateIndividualChat(CreateIndividualChatRequest) returns (CreateIndividualChatResponse);
+
+
+// ========================================================================================
+// Group
+
+message GroupChat {
+  string chat_id = 1;
+  string chat_name = 2;
+  string chat_admin = 3;
+  repeated string chat_members = 4;
+}
+
+message CreateGroupChatRequest {
+  string chat_name = 1;
+}
+
+message CreateGroupChatResponse {
+  string chat_id = 1;
+  string chat_name = 2;
+  string chat_admin = 3;
+  repeated string chat_members = 4;
+}
+
+message AddContactToGroupChatRequest {
+  string chat_id = 1;
+  string user_id = 2;
+}
+
+message AddContactToGroupChatResponse {
+  string chat_id = 1;
+  string chat_name = 2;
+  string chat_admin = 3;
+  repeated string chat_members = 4;
+}
+
+// ========================================================================================
+// Individual
+
+message IndividualChat {
+  string chat_id = 1;
+  repeated string chat_members = 2;
+}
+
+message CreateIndividualChatRequest {
+  string user_id = 1;
+}
+
+message CreateIndividualChatResponse {
+  string chat_id = 1;
+  repeated string chat_members = 2;
+}
+
+
 rpc RemoveMemberFromGroupChat(RemoveMemberFromGroupChatRequest) returns (RemoveMemberFromGroupChatResponse);
 
 message RemoveMemberFromGroupChatRequest {
