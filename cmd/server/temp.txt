@@ -1,3 +1,16 @@
+// RemoveMemberFromChat adds a member to a chat.
+func RemoveMemberFromChat(ctx context.Context, db *mongo.Database, chatID primitive.ObjectID, userID primitive.ObjectID) (*Chat, error) {
+	var chat Chat
+	filter := bson.M{"_id": chatID}
+	update := bson.M{"$pull": bson.M{"members": userID}}
+	if err := db.Collection(chatCollection).FindOneAndUpdate(ctx, filter, update).Decode(&chat); err != nil {
+		return nil, status.Errorf(
+			codes.Internal, "removing member from group chat",
+		)
+	}
+	return &chat, nil
+}
+
 func (gcs *gopherChatterServer) RemoveMemberFromGroupChat(ctx context.Context, req *gopherchatterv0.RemoveMemberFromGroupChatRequest) (*gopherchatterv0.RemoveMemberFromGroupChatResponse, error) {
 	authUserID, err := primitive.ObjectIDFromHex(grpc_ctxtags.Extract(ctx).Values()["auth.sub"].(string))
 	if err != nil {
