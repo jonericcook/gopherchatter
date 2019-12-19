@@ -18,7 +18,7 @@ type Group struct {
 	ID      primitive.ObjectID   `bson:"_id,omitempty"`
 	Name    string               `bson:"name"`
 	Type    string               `bson:"type"`
-	Admins  []primitive.ObjectID `bson:"admins"`
+	Admin   primitive.ObjectID   `bson:"admin"`
 	Members []primitive.ObjectID `bson:"members"`
 }
 

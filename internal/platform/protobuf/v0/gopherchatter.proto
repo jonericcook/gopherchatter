@@ -79,7 +79,33 @@ message CreateGroupChatResponse {
   string chat_id = 1;
   string chat_name = 2;
   string chat_type = 3;
-  repeated string chat_admins = 4;
+  string chat_admin = 4;
+  repeated string chat_members = 5;
+}
+
+message AddMemberToGroupChatRequest {
+  string chat_id = 1;
+  string user_id = 2;
+}
+
+message AddMemberToGroupChatResponse {
+  string chat_id = 1;
+  string chat_name = 2;
+  string chat_type = 3;
+  string chat_admin = 4;
+  repeated string chat_members = 5;
+}
+
+message RemoveMemberFromGroupChatRequest {
+  string chat_id = 1;
+  string user_id = 2;
+}
+
+message RemoveMemberFromGroupChatResponse {
+  string chat_id = 1;
+  string chat_name = 2;
+  string chat_type = 3;
+  string chat_admin = 4;
   repeated string chat_members = 5;
 }
 
@@ -104,5 +130,7 @@ service GopherChatter {
   rpc RemoveContact(RemoveContactRequest) returns (RemoveContactResponse);
   rpc GetContactsList(GetContactsListRequest) returns (GetContactsListResponse);
   rpc CreateGroupChat(CreateGroupChatRequest) returns (CreateGroupChatResponse);
+  rpc AddMemberToGroupChat(AddMemberToGroupChatRequest) returns (AddMemberToGroupChatResponse);
+  rpc RemoveMemberFromGroupChat(RemoveMemberFromGroupChatRequest) returns (RemoveMemberFromGroupChatResponse);
   rpc CreateIndividualChat(CreateIndividualChatRequest) returns (CreateIndividualChatResponse);
 }
