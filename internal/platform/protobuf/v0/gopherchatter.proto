@@ -131,7 +131,7 @@ message SendGroupMessageResponse {
   string chat_id = 2;
   string author_id = 3;
   string contents = 4;
-  int64 created = 5;
+  string created = 5;
 }
 
 message SendIndividualMessageRequest {
@@ -144,7 +144,7 @@ message SendIndividualMessageResponse {
   string chat_id = 2;
   string author_id = 3;
   string contents = 4;
-  int64 created = 5;
+  string created = 5;
 }
 
 // ========================================================================================

@@ -301,18 +301,18 @@ func (gcs *gopherChatterServer) CreateGroupChat(ctx context.Context, req *gopher
 		Admin:   authUserID,
 		Members: members,
 	}
-	cgc, err := chat.CreateGroup(ctx, gcs.db, cg)
+	ccg, err := chat.CreateGroup(ctx, gcs.db, cg)
 	if err != nil {
 		return nil, err
 	}
 	var chatMembers []string
-	for _, e := range cgc.Members {
+	for _, e := range ccg.Members {
 		chatMembers = append(chatMembers, e.Hex())
 	}
 	return &gopherchatterv0.CreateGroupChatResponse{
-		ChatId:      cgc.ID.Hex(),
-		ChatName:    cgc.Name,
-		ChatType:    cgc.Type,
+		ChatId:      ccg.ID.Hex(),
+		ChatName:    ccg.Name,
+		ChatType:    ccg.Type,
 		ChatAdmin:   authUserID.Hex(),
 		ChatMembers: chatMembers,
 	}, nil
@@ -467,56 +467,47 @@ func (gcs *gopherChatterServer) CreateIndividualChat(ctx context.Context, req *g
 			codes.NotFound, "user id in token does not exist",
 		)
 	}
-	if len(req.GetChatMembers()) != 1 {
+
+	userID, err := primitive.ObjectIDFromHex(req.GetChatMember())
+	if err != nil {
 		return nil, status.Errorf(
-			codes.InvalidArgument, "chat members must contain 1 user",
+			codes.Internal, "converting to ObjectID",
 		)
 	}
-	var members []primitive.ObjectID
-	for _, e := range req.GetChatMembers() {
-		userID, err := primitive.ObjectIDFromHex(e)
-		if err != nil {
-			return nil, status.Errorf(
-				codes.Internal, "converting to ObjectID",
-			)
-		}
-		if !user.IDExists(ctx, gcs.db, userID) {
-			return nil, status.Errorf(
-				codes.NotFound, "user id does not exist",
-			)
-		}
-		c := contact.Contact{
-			Owner: authUserID,
-			User:  userID,
-		}
-		if !contact.Exists(ctx, gcs.db, c) {
-			return nil, status.Errorf(
-				codes.NotFound, "contact does not exist",
-			)
-		}
-		members = append(members, userID)
+	if !user.IDExists(ctx, gcs.db, userID) {
+		return nil, status.Errorf(
+			codes.NotFound, "user id does not exist",
+		)
 	}
-	members = append(members, authUserID)
+	c := contact.Contact{
+		Owner: authUserID,
+		User:  userID,
+	}
+	if !contact.Exists(ctx, gcs.db, c) {
+		return nil, status.Errorf(
+			codes.NotFound, "contact does not exist",
+		)
+	}
 	ci := chat.Individual{
 		Type:    chat.IndividualLabel,
-		Members: members,
+		Members: []primitive.ObjectID{authUserID, userID},
 	}
 	if ci.Exists(ctx, gcs.db) {
 		return nil, status.Errorf(
 			codes.AlreadyExists, "individual chat already exists",
 		)
 	}
-	cic, err := chat.CreateIndividual(ctx, gcs.db, ci)
+	cci, err := chat.CreateIndividual(ctx, gcs.db, ci)
 	if err != nil {
 		return nil, err
 	}
 	var chatMembers []string
-	for _, e := range cic.Members {
+	for _, e := range cci.Members {
 		chatMembers = append(chatMembers, e.Hex())
 	}
 	return &gopherchatterv0.CreateIndividualChatResponse{
-		ChatId:      cic.ID.Hex(),
-		ChatType:    cic.Type,
+		ChatId:      cci.ID.Hex(),
+		ChatType:    cci.Type,
 		ChatMembers: chatMembers,
 	}, nil
 }
@@ -560,7 +551,7 @@ func (gcs *gopherChatterServer) SendGroupMessage(ctx context.Context, req *gophe
 		ChatID:   chatID,
 		AuthorID: authUserID,
 		Contents: req.GetContents(),
-		Created:  time.Now().Unix(),
+		Created:  time.Now().UTC(),
 	}
 	mc, err := message.Create(ctx, gcs.db, m)
 	if err != nil {
@@ -571,7 +562,7 @@ func (gcs *gopherChatterServer) SendGroupMessage(ctx context.Context, req *gophe
 		ChatId:    chatID.Hex(),
 		AuthorId:  authUserID.Hex(),
 		Contents:  req.GetContents(),
-		Created:   mc.Created,
+		Created:   mc.Created.UTC().String(),
 	}, nil
 }
 
@@ -598,11 +589,11 @@ func (gcs *gopherChatterServer) SendIndividualMessage(ctx context.Context, req *
 			codes.Internal, "converting to ObjectID",
 		)
 	}
-	ci, err := chat.GetIndividual(ctx, gcs.db, chatID)
+	cg, err := chat.GetIndividual(ctx, gcs.db, chatID)
 	if err != nil {
 		return nil, err
 	}
-	if !chat.IsMember(ci.Members, authUserID) {
+	if !chat.IsMember(cg.Members, authUserID) {
 		return nil, status.Errorf(
 			codes.NotFound, "not a chat member",
 		)
@@ -611,7 +602,7 @@ func (gcs *gopherChatterServer) SendIndividualMessage(ctx context.Context, req *
 		ChatID:   chatID,
 		AuthorID: authUserID,
 		Contents: req.GetContents(),
-		Created:  time.Now().Unix(),
+		Created:  time.Now().UTC(),
 	}
 	mc, err := message.Create(ctx, gcs.db, m)
 	if err != nil {
@@ -622,9 +613,8 @@ func (gcs *gopherChatterServer) SendIndividualMessage(ctx context.Context, req *
 		ChatId:    chatID.Hex(),
 		AuthorId:  authUserID.Hex(),
 		Contents:  req.GetContents(),
-		Created:   mc.Created,
+		Created:   mc.Created.UTC().String(),
 	}, nil
-
 }
 
 type gopherChatterServer struct {

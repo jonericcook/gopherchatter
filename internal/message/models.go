@@ -1,6 +1,8 @@
 package message
 
 import (
+	"time"
+
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -10,5 +12,5 @@ type Message struct {
 	ChatID   primitive.ObjectID `bson:"chat_id"`
 	AuthorID primitive.ObjectID `bson:"author_id"`
 	Contents string             `bson:"contents"`
-	Created  int64              `bson:"created"`
+	Created  time.Time          `bson:"created"`
 }
