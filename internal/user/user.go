@@ -144,21 +144,7 @@ func Create(ctx context.Context, db *mongo.Database, u User) (*User, error) {
 		)
 	}
 	u.ID = result.InsertedID.(primitive.ObjectID)
-	u.LastLogin = primitive.DateTime(u.ID.Timestamp().Unix())
 	return &u, nil
-}
-
-// UpdateLastLogin updates the last login element of a user.
-func UpdateLastLogin(ctx context.Context, db *mongo.Database, userID primitive.ObjectID, t primitive.DateTime) error {
-	var user User
-	filter := bson.M{"_id": userID}
-	update := bson.M{"$set": bson.M{"last_login": t}}
-	if err := db.Collection(usersCollection).FindOneAndUpdate(ctx, filter, update).Decode(&user); err != nil {
-		return status.Errorf(
-			codes.Internal, "updating last login",
-		)
-	}
-	return nil
 }
 
 // Authenticate authenticates a user based on their username and password

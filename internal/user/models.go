@@ -9,7 +9,6 @@ type User struct {
 	ID           primitive.ObjectID `bson:"_id,omitempty"`
 	Username     string             `bson:"username"`
 	PasswordHash string             `bson:"password_hash"`
-	LastLogin    primitive.DateTime `bson:"last_login"`
 }
 
 // NewUser contains information needed to create a new user.

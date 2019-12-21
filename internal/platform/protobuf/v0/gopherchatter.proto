@@ -3,7 +3,6 @@ syntax = "proto3";
 package gopherchatter.v0;
 option go_package = "gopherchatterv0";
 
-
 // ========================================================================================
 // Authentication
 
@@ -110,13 +109,42 @@ message RemoveMemberFromGroupChatResponse {
 }
 
 message CreateIndividualChatRequest {
-  repeated string chat_members = 1;
+  string chat_member = 1;
 }
 
 message CreateIndividualChatResponse {
   string chat_id = 1;
   string chat_type = 2;
   repeated string chat_members = 3;
+}
+
+// ========================================================================================
+// Message
+
+message SendGroupMessageRequest {
+  string chat_id = 1;
+  string contents = 2;
+}
+
+message SendGroupMessageResponse {
+  string message_id = 1;
+  string chat_id = 2;
+  string author_id = 3;
+  string contents = 4;
+  int64 created = 5;
+}
+
+message SendIndividualMessageRequest {
+  string chat_id = 1;
+  string contents = 2;
+}
+
+message SendIndividualMessageResponse {
+  string message_id = 1;
+  string chat_id = 2;
+  string author_id = 3;
+  string contents = 4;
+  int64 created = 5;
 }
 
 // ========================================================================================
@@ -133,4 +161,6 @@ service GopherChatter {
   rpc AddMemberToGroupChat(AddMemberToGroupChatRequest) returns (AddMemberToGroupChatResponse);
   rpc RemoveMemberFromGroupChat(RemoveMemberFromGroupChatRequest) returns (RemoveMemberFromGroupChatResponse);
   rpc CreateIndividualChat(CreateIndividualChatRequest) returns (CreateIndividualChatResponse);
+  rpc SendGroupMessage(SendGroupMessageRequest) returns (SendGroupMessageResponse);
+  rpc SendIndividualMessage(SendIndividualMessageRequest) returns (SendIndividualMessageResponse);
 }

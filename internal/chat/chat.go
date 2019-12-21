@@ -37,8 +37,8 @@ func GetIndividual(ctx context.Context, db *mongo.Database, chatID primitive.Obj
 }
 
 // IsMember checks if a chat has a member.
-func (c Group) IsMember(userID primitive.ObjectID) bool {
-	for _, e := range c.Members {
+func IsMember(members []primitive.ObjectID, userID primitive.ObjectID) bool {
+	for _, e := range members {
 		if e == userID {
 			return true
 		}
