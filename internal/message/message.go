@@ -24,14 +24,32 @@ func Create(ctx context.Context, db *mongo.Database, m Message) (*Message, error
 	return &m, nil
 }
 
-// Get checks if a message exists.
-func Get(ctx context.Context, db *mongo.Database, chatID primitive.ObjectID) (*Message, error) {
-	var message Message
-	filter := bson.M{"_id": chatID}
-	if err := db.Collection(messageCollection).FindOne(ctx, filter).Decode(&message); err != nil {
-		return nil, status.Errorf(
-			codes.NotFound, "message id does not exist",
+// DeleteChatMessages deletes a chat messages.
+func DeleteChatMessages(ctx context.Context, db *mongo.Database, chatID primitive.ObjectID) error {
+	filter := bson.M{"chat_id": chatID}
+	_, err := db.Collection(messageCollection).DeleteMany(ctx, filter)
+	if err != nil {
+		return status.Errorf(
+			codes.Internal, "deleteing messages",
 		)
 	}
-	return &message, nil
+	return nil
+}
+
+// GetMessages returns all the messages for a chat.
+func GetMessages(ctx context.Context, db *mongo.Database, chatID primitive.ObjectID) ([]Message, error) {
+	filter := bson.M{"chat_id": chatID}
+	cursor, err := db.Collection(messageCollection).Find(ctx, filter)
+	if err != nil {
+		return nil, status.Errorf(
+			codes.Internal, "getting messages",
+		)
+	}
+	var messages []Message
+	if err = cursor.All(ctx, &messages); err != nil {
+		return nil, status.Errorf(
+			codes.InvalidArgument, "getting messages from cursor",
+		)
+	}
+	return messages, nil
 }

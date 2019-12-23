@@ -45,6 +45,14 @@ message SearchUsernameResponse {
   string username = 2;
 }
 
+message GetUsersRequest {
+  repeated string user_ids = 1;
+}
+
+message GetUsersResponse {
+  repeated User users = 1;
+}
+
 // ========================================================================================
 // Contact
 
@@ -60,14 +68,22 @@ message RemoveContactRequest {
 
 message RemoveContactResponse {}
 
-message GetContactsListRequest {}
+message GetContactsRequest {}
 
-message GetContactsListResponse {
+message GetContactsResponse {
   repeated User users = 1;
 }
 
 // ========================================================================================
-// Chat
+// Group Chat
+
+message GroupChat {
+  string chat_id = 1;
+  string chat_name = 2;
+  string chat_type = 3;
+  string chat_admin = 4;
+  repeated string chat_members = 5;
+}
 
 message CreateGroupChatRequest {
   string chat_name = 1;
@@ -81,6 +97,18 @@ message CreateGroupChatResponse {
   string chat_admin = 4;
   repeated string chat_members = 5;
 }
+
+message GetGroupChatsRequest {}
+
+message GetGroupChatsResponse {
+  repeated GroupChat group_chats = 1;
+}
+
+message LeaveGroupChatRequest {
+  string chat_id = 1;
+}
+
+message LeaveGroupChatResponse {}
 
 message AddMemberToGroupChatRequest {
   string chat_id = 1;
@@ -108,6 +136,15 @@ message RemoveMemberFromGroupChatResponse {
   repeated string chat_members = 5;
 }
 
+// ========================================================================================
+// Individual Chat
+
+message IndividualChat {
+  string chat_id = 1;
+  string chat_type = 2;
+  repeated string chat_members = 3;
+}
+
 message CreateIndividualChatRequest {
   string chat_member = 1;
 }
@@ -118,9 +155,22 @@ message CreateIndividualChatResponse {
   repeated string chat_members = 3;
 }
 
+message GetIndividualChatsRequest {}
+
+message GetIndividualChatsResponse {
+repeated IndividualChat individual_chats = 1;
+}
+
 // ========================================================================================
 // Message
 
+message Message {
+  string message_id = 1;
+  string chat_id = 2;
+  string author_id = 3;
+  string contents = 4;
+  string created = 5;
+}
 message SendGroupMessageRequest {
   string chat_id = 1;
   string contents = 2;
@@ -147,6 +197,22 @@ message SendIndividualMessageResponse {
   string created = 5;
 }
 
+message GetGroupChatMessagesRequest {
+  string chat_id = 1;
+}
+
+message GetGroupChatMessagesResponse {
+  repeated Message messages = 1;
+}
+
+message GetIndividualChatMessagesRequest {
+  string chat_id = 1;
+}
+
+message GetIndividualChatMessagesResponse {
+  repeated Message messages = 1;
+}
+
 // ========================================================================================
 // Service
 
@@ -154,13 +220,19 @@ service GopherChatter {
   rpc Authenticate(AuthenticateRequest) returns (AuthenticateResponse);
   rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
   rpc SearchUsername(SearchUsernameRequest) returns (SearchUsernameResponse);
+  rpc GetUsers(GetUsersRequest) returns (GetUsersResponse);
   rpc AddContact(AddContactRequest) returns (AddContactResponse);
   rpc RemoveContact(RemoveContactRequest) returns (RemoveContactResponse);
-  rpc GetContactsList(GetContactsListRequest) returns (GetContactsListResponse);
+  rpc GetContacts(GetContactsRequest) returns (GetContactsResponse);
   rpc CreateGroupChat(CreateGroupChatRequest) returns (CreateGroupChatResponse);
+  rpc GetGroupChats(GetGroupChatsRequest) returns (GetGroupChatsResponse);
+  rpc LeaveGroupChat(LeaveGroupChatRequest) returns (LeaveGroupChatResponse);
   rpc AddMemberToGroupChat(AddMemberToGroupChatRequest) returns (AddMemberToGroupChatResponse);
   rpc RemoveMemberFromGroupChat(RemoveMemberFromGroupChatRequest) returns (RemoveMemberFromGroupChatResponse);
   rpc CreateIndividualChat(CreateIndividualChatRequest) returns (CreateIndividualChatResponse);
+  rpc GetIndividualChats(GetIndividualChatsRequest) returns (GetIndividualChatsResponse);
   rpc SendGroupMessage(SendGroupMessageRequest) returns (SendGroupMessageResponse);
   rpc SendIndividualMessage(SendIndividualMessageRequest) returns (SendIndividualMessageResponse);
+  rpc GetGroupChatMessages(GetGroupChatMessagesRequest) returns (GetGroupChatMessagesResponse);
+  rpc GetIndividualChatMessages(GetIndividualChatMessagesRequest) returns (GetIndividualChatMessagesResponse);
 }

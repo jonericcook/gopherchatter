@@ -361,6 +361,84 @@ func (m *SearchUsernameResponse) GetUsername() string {
 	return ""
 }
 
+type GetUsersRequest struct {
+	UserIds              []string `protobuf:"bytes,1,rep,name=user_ids,json=userIds,proto3" json:"user_ids,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *GetUsersRequest) Reset()         { *m = GetUsersRequest{} }
+func (m *GetUsersRequest) String() string { return proto.CompactTextString(m) }
+func (*GetUsersRequest) ProtoMessage()    {}
+func (*GetUsersRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_8c8cda079cad55b5, []int{7}
+}
+
+func (m *GetUsersRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetUsersRequest.Unmarshal(m, b)
+}
+func (m *GetUsersRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetUsersRequest.Marshal(b, m, deterministic)
+}
+func (m *GetUsersRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetUsersRequest.Merge(m, src)
+}
+func (m *GetUsersRequest) XXX_Size() int {
+	return xxx_messageInfo_GetUsersRequest.Size(m)
+}
+func (m *GetUsersRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetUsersRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetUsersRequest proto.InternalMessageInfo
+
+func (m *GetUsersRequest) GetUserIds() []string {
+	if m != nil {
+		return m.UserIds
+	}
+	return nil
+}
+
+type GetUsersResponse struct {
+	Users                []*User  `protobuf:"bytes,1,rep,name=users,proto3" json:"users,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *GetUsersResponse) Reset()         { *m = GetUsersResponse{} }
+func (m *GetUsersResponse) String() string { return proto.CompactTextString(m) }
+func (*GetUsersResponse) ProtoMessage()    {}
+func (*GetUsersResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_8c8cda079cad55b5, []int{8}
+}
+
+func (m *GetUsersResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetUsersResponse.Unmarshal(m, b)
+}
+func (m *GetUsersResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetUsersResponse.Marshal(b, m, deterministic)
+}
+func (m *GetUsersResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetUsersResponse.Merge(m, src)
+}
+func (m *GetUsersResponse) XXX_Size() int {
+	return xxx_messageInfo_GetUsersResponse.Size(m)
+}
+func (m *GetUsersResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetUsersResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetUsersResponse proto.InternalMessageInfo
+
+func (m *GetUsersResponse) GetUsers() []*User {
+	if m != nil {
+		return m.Users
+	}
+	return nil
+}
+
 type AddContactRequest struct {
 	UserId               string   `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -372,7 +450,7 @@ func (m *AddContactRequest) Reset()         { *m = AddContactRequest{} }
 func (m *AddContactRequest) String() string { return proto.CompactTextString(m) }
 func (*AddContactRequest) ProtoMessage()    {}
 func (*AddContactRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8c8cda079cad55b5, []int{7}
+	return fileDescriptor_8c8cda079cad55b5, []int{9}
 }
 
 func (m *AddContactRequest) XXX_Unmarshal(b []byte) error {
@@ -410,7 +488,7 @@ func (m *AddContactResponse) Reset()         { *m = AddContactResponse{} }
 func (m *AddContactResponse) String() string { return proto.CompactTextString(m) }
 func (*AddContactResponse) ProtoMessage()    {}
 func (*AddContactResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8c8cda079cad55b5, []int{8}
+	return fileDescriptor_8c8cda079cad55b5, []int{10}
 }
 
 func (m *AddContactResponse) XXX_Unmarshal(b []byte) error {
@@ -442,7 +520,7 @@ func (m *RemoveContactRequest) Reset()         { *m = RemoveContactRequest{} }
 func (m *RemoveContactRequest) String() string { return proto.CompactTextString(m) }
 func (*RemoveContactRequest) ProtoMessage()    {}
 func (*RemoveContactRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8c8cda079cad55b5, []int{9}
+	return fileDescriptor_8c8cda079cad55b5, []int{11}
 }
 
 func (m *RemoveContactRequest) XXX_Unmarshal(b []byte) error {
@@ -480,7 +558,7 @@ func (m *RemoveContactResponse) Reset()         { *m = RemoveContactResponse{} }
 func (m *RemoveContactResponse) String() string { return proto.CompactTextString(m) }
 func (*RemoveContactResponse) ProtoMessage()    {}
 func (*RemoveContactResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8c8cda079cad55b5, []int{10}
+	return fileDescriptor_8c8cda079cad55b5, []int{12}
 }
 
 func (m *RemoveContactResponse) XXX_Unmarshal(b []byte) error {
@@ -501,72 +579,143 @@ func (m *RemoveContactResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_RemoveContactResponse proto.InternalMessageInfo
 
-type GetContactsListRequest struct {
+type GetContactsRequest struct {
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *GetContactsListRequest) Reset()         { *m = GetContactsListRequest{} }
-func (m *GetContactsListRequest) String() string { return proto.CompactTextString(m) }
-func (*GetContactsListRequest) ProtoMessage()    {}
-func (*GetContactsListRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8c8cda079cad55b5, []int{11}
+func (m *GetContactsRequest) Reset()         { *m = GetContactsRequest{} }
+func (m *GetContactsRequest) String() string { return proto.CompactTextString(m) }
+func (*GetContactsRequest) ProtoMessage()    {}
+func (*GetContactsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_8c8cda079cad55b5, []int{13}
 }
 
-func (m *GetContactsListRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_GetContactsListRequest.Unmarshal(m, b)
+func (m *GetContactsRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetContactsRequest.Unmarshal(m, b)
 }
-func (m *GetContactsListRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_GetContactsListRequest.Marshal(b, m, deterministic)
+func (m *GetContactsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetContactsRequest.Marshal(b, m, deterministic)
 }
-func (m *GetContactsListRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_GetContactsListRequest.Merge(m, src)
+func (m *GetContactsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetContactsRequest.Merge(m, src)
 }
-func (m *GetContactsListRequest) XXX_Size() int {
-	return xxx_messageInfo_GetContactsListRequest.Size(m)
+func (m *GetContactsRequest) XXX_Size() int {
+	return xxx_messageInfo_GetContactsRequest.Size(m)
 }
-func (m *GetContactsListRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_GetContactsListRequest.DiscardUnknown(m)
+func (m *GetContactsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetContactsRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_GetContactsListRequest proto.InternalMessageInfo
+var xxx_messageInfo_GetContactsRequest proto.InternalMessageInfo
 
-type GetContactsListResponse struct {
+type GetContactsResponse struct {
 	Users                []*User  `protobuf:"bytes,1,rep,name=users,proto3" json:"users,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *GetContactsListResponse) Reset()         { *m = GetContactsListResponse{} }
-func (m *GetContactsListResponse) String() string { return proto.CompactTextString(m) }
-func (*GetContactsListResponse) ProtoMessage()    {}
-func (*GetContactsListResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8c8cda079cad55b5, []int{12}
+func (m *GetContactsResponse) Reset()         { *m = GetContactsResponse{} }
+func (m *GetContactsResponse) String() string { return proto.CompactTextString(m) }
+func (*GetContactsResponse) ProtoMessage()    {}
+func (*GetContactsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_8c8cda079cad55b5, []int{14}
 }
 
-func (m *GetContactsListResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_GetContactsListResponse.Unmarshal(m, b)
+func (m *GetContactsResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetContactsResponse.Unmarshal(m, b)
 }
-func (m *GetContactsListResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_GetContactsListResponse.Marshal(b, m, deterministic)
+func (m *GetContactsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetContactsResponse.Marshal(b, m, deterministic)
 }
-func (m *GetContactsListResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_GetContactsListResponse.Merge(m, src)
+func (m *GetContactsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetContactsResponse.Merge(m, src)
 }
-func (m *GetContactsListResponse) XXX_Size() int {
-	return xxx_messageInfo_GetContactsListResponse.Size(m)
+func (m *GetContactsResponse) XXX_Size() int {
+	return xxx_messageInfo_GetContactsResponse.Size(m)
 }
-func (m *GetContactsListResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_GetContactsListResponse.DiscardUnknown(m)
+func (m *GetContactsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetContactsResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_GetContactsListResponse proto.InternalMessageInfo
+var xxx_messageInfo_GetContactsResponse proto.InternalMessageInfo
 
-func (m *GetContactsListResponse) GetUsers() []*User {
+func (m *GetContactsResponse) GetUsers() []*User {
 	if m != nil {
 		return m.Users
+	}
+	return nil
+}
+
+type GroupChat struct {
+	ChatId               string   `protobuf:"bytes,1,opt,name=chat_id,json=chatId,proto3" json:"chat_id,omitempty"`
+	ChatName             string   `protobuf:"bytes,2,opt,name=chat_name,json=chatName,proto3" json:"chat_name,omitempty"`
+	ChatType             string   `protobuf:"bytes,3,opt,name=chat_type,json=chatType,proto3" json:"chat_type,omitempty"`
+	ChatAdmin            string   `protobuf:"bytes,4,opt,name=chat_admin,json=chatAdmin,proto3" json:"chat_admin,omitempty"`
+	ChatMembers          []string `protobuf:"bytes,5,rep,name=chat_members,json=chatMembers,proto3" json:"chat_members,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *GroupChat) Reset()         { *m = GroupChat{} }
+func (m *GroupChat) String() string { return proto.CompactTextString(m) }
+func (*GroupChat) ProtoMessage()    {}
+func (*GroupChat) Descriptor() ([]byte, []int) {
+	return fileDescriptor_8c8cda079cad55b5, []int{15}
+}
+
+func (m *GroupChat) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GroupChat.Unmarshal(m, b)
+}
+func (m *GroupChat) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GroupChat.Marshal(b, m, deterministic)
+}
+func (m *GroupChat) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GroupChat.Merge(m, src)
+}
+func (m *GroupChat) XXX_Size() int {
+	return xxx_messageInfo_GroupChat.Size(m)
+}
+func (m *GroupChat) XXX_DiscardUnknown() {
+	xxx_messageInfo_GroupChat.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GroupChat proto.InternalMessageInfo
+
+func (m *GroupChat) GetChatId() string {
+	if m != nil {
+		return m.ChatId
+	}
+	return ""
+}
+
+func (m *GroupChat) GetChatName() string {
+	if m != nil {
+		return m.ChatName
+	}
+	return ""
+}
+
+func (m *GroupChat) GetChatType() string {
+	if m != nil {
+		return m.ChatType
+	}
+	return ""
+}
+
+func (m *GroupChat) GetChatAdmin() string {
+	if m != nil {
+		return m.ChatAdmin
+	}
+	return ""
+}
+
+func (m *GroupChat) GetChatMembers() []string {
+	if m != nil {
+		return m.ChatMembers
 	}
 	return nil
 }
@@ -583,7 +732,7 @@ func (m *CreateGroupChatRequest) Reset()         { *m = CreateGroupChatRequest{}
 func (m *CreateGroupChatRequest) String() string { return proto.CompactTextString(m) }
 func (*CreateGroupChatRequest) ProtoMessage()    {}
 func (*CreateGroupChatRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8c8cda079cad55b5, []int{13}
+	return fileDescriptor_8c8cda079cad55b5, []int{16}
 }
 
 func (m *CreateGroupChatRequest) XXX_Unmarshal(b []byte) error {
@@ -633,7 +782,7 @@ func (m *CreateGroupChatResponse) Reset()         { *m = CreateGroupChatResponse
 func (m *CreateGroupChatResponse) String() string { return proto.CompactTextString(m) }
 func (*CreateGroupChatResponse) ProtoMessage()    {}
 func (*CreateGroupChatResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8c8cda079cad55b5, []int{14}
+	return fileDescriptor_8c8cda079cad55b5, []int{17}
 }
 
 func (m *CreateGroupChatResponse) XXX_Unmarshal(b []byte) error {
@@ -689,6 +838,146 @@ func (m *CreateGroupChatResponse) GetChatMembers() []string {
 	return nil
 }
 
+type GetGroupChatsRequest struct {
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *GetGroupChatsRequest) Reset()         { *m = GetGroupChatsRequest{} }
+func (m *GetGroupChatsRequest) String() string { return proto.CompactTextString(m) }
+func (*GetGroupChatsRequest) ProtoMessage()    {}
+func (*GetGroupChatsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_8c8cda079cad55b5, []int{18}
+}
+
+func (m *GetGroupChatsRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetGroupChatsRequest.Unmarshal(m, b)
+}
+func (m *GetGroupChatsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetGroupChatsRequest.Marshal(b, m, deterministic)
+}
+func (m *GetGroupChatsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetGroupChatsRequest.Merge(m, src)
+}
+func (m *GetGroupChatsRequest) XXX_Size() int {
+	return xxx_messageInfo_GetGroupChatsRequest.Size(m)
+}
+func (m *GetGroupChatsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetGroupChatsRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetGroupChatsRequest proto.InternalMessageInfo
+
+type GetGroupChatsResponse struct {
+	GroupChats           []*GroupChat `protobuf:"bytes,1,rep,name=group_chats,json=groupChats,proto3" json:"group_chats,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}     `json:"-"`
+	XXX_unrecognized     []byte       `json:"-"`
+	XXX_sizecache        int32        `json:"-"`
+}
+
+func (m *GetGroupChatsResponse) Reset()         { *m = GetGroupChatsResponse{} }
+func (m *GetGroupChatsResponse) String() string { return proto.CompactTextString(m) }
+func (*GetGroupChatsResponse) ProtoMessage()    {}
+func (*GetGroupChatsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_8c8cda079cad55b5, []int{19}
+}
+
+func (m *GetGroupChatsResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetGroupChatsResponse.Unmarshal(m, b)
+}
+func (m *GetGroupChatsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetGroupChatsResponse.Marshal(b, m, deterministic)
+}
+func (m *GetGroupChatsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetGroupChatsResponse.Merge(m, src)
+}
+func (m *GetGroupChatsResponse) XXX_Size() int {
+	return xxx_messageInfo_GetGroupChatsResponse.Size(m)
+}
+func (m *GetGroupChatsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetGroupChatsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetGroupChatsResponse proto.InternalMessageInfo
+
+func (m *GetGroupChatsResponse) GetGroupChats() []*GroupChat {
+	if m != nil {
+		return m.GroupChats
+	}
+	return nil
+}
+
+type LeaveGroupChatRequest struct {
+	ChatId               string   `protobuf:"bytes,1,opt,name=chat_id,json=chatId,proto3" json:"chat_id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *LeaveGroupChatRequest) Reset()         { *m = LeaveGroupChatRequest{} }
+func (m *LeaveGroupChatRequest) String() string { return proto.CompactTextString(m) }
+func (*LeaveGroupChatRequest) ProtoMessage()    {}
+func (*LeaveGroupChatRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_8c8cda079cad55b5, []int{20}
+}
+
+func (m *LeaveGroupChatRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_LeaveGroupChatRequest.Unmarshal(m, b)
+}
+func (m *LeaveGroupChatRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_LeaveGroupChatRequest.Marshal(b, m, deterministic)
+}
+func (m *LeaveGroupChatRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_LeaveGroupChatRequest.Merge(m, src)
+}
+func (m *LeaveGroupChatRequest) XXX_Size() int {
+	return xxx_messageInfo_LeaveGroupChatRequest.Size(m)
+}
+func (m *LeaveGroupChatRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_LeaveGroupChatRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_LeaveGroupChatRequest proto.InternalMessageInfo
+
+func (m *LeaveGroupChatRequest) GetChatId() string {
+	if m != nil {
+		return m.ChatId
+	}
+	return ""
+}
+
+type LeaveGroupChatResponse struct {
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *LeaveGroupChatResponse) Reset()         { *m = LeaveGroupChatResponse{} }
+func (m *LeaveGroupChatResponse) String() string { return proto.CompactTextString(m) }
+func (*LeaveGroupChatResponse) ProtoMessage()    {}
+func (*LeaveGroupChatResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_8c8cda079cad55b5, []int{21}
+}
+
+func (m *LeaveGroupChatResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_LeaveGroupChatResponse.Unmarshal(m, b)
+}
+func (m *LeaveGroupChatResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_LeaveGroupChatResponse.Marshal(b, m, deterministic)
+}
+func (m *LeaveGroupChatResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_LeaveGroupChatResponse.Merge(m, src)
+}
+func (m *LeaveGroupChatResponse) XXX_Size() int {
+	return xxx_messageInfo_LeaveGroupChatResponse.Size(m)
+}
+func (m *LeaveGroupChatResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_LeaveGroupChatResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_LeaveGroupChatResponse proto.InternalMessageInfo
+
 type AddMemberToGroupChatRequest struct {
 	ChatId               string   `protobuf:"bytes,1,opt,name=chat_id,json=chatId,proto3" json:"chat_id,omitempty"`
 	UserId               string   `protobuf:"bytes,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
@@ -701,7 +990,7 @@ func (m *AddMemberToGroupChatRequest) Reset()         { *m = AddMemberToGroupCha
 func (m *AddMemberToGroupChatRequest) String() string { return proto.CompactTextString(m) }
 func (*AddMemberToGroupChatRequest) ProtoMessage()    {}
 func (*AddMemberToGroupChatRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8c8cda079cad55b5, []int{15}
+	return fileDescriptor_8c8cda079cad55b5, []int{22}
 }
 
 func (m *AddMemberToGroupChatRequest) XXX_Unmarshal(b []byte) error {
@@ -751,7 +1040,7 @@ func (m *AddMemberToGroupChatResponse) Reset()         { *m = AddMemberToGroupCh
 func (m *AddMemberToGroupChatResponse) String() string { return proto.CompactTextString(m) }
 func (*AddMemberToGroupChatResponse) ProtoMessage()    {}
 func (*AddMemberToGroupChatResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8c8cda079cad55b5, []int{16}
+	return fileDescriptor_8c8cda079cad55b5, []int{23}
 }
 
 func (m *AddMemberToGroupChatResponse) XXX_Unmarshal(b []byte) error {
@@ -819,7 +1108,7 @@ func (m *RemoveMemberFromGroupChatRequest) Reset()         { *m = RemoveMemberFr
 func (m *RemoveMemberFromGroupChatRequest) String() string { return proto.CompactTextString(m) }
 func (*RemoveMemberFromGroupChatRequest) ProtoMessage()    {}
 func (*RemoveMemberFromGroupChatRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8c8cda079cad55b5, []int{17}
+	return fileDescriptor_8c8cda079cad55b5, []int{24}
 }
 
 func (m *RemoveMemberFromGroupChatRequest) XXX_Unmarshal(b []byte) error {
@@ -869,7 +1158,7 @@ func (m *RemoveMemberFromGroupChatResponse) Reset()         { *m = RemoveMemberF
 func (m *RemoveMemberFromGroupChatResponse) String() string { return proto.CompactTextString(m) }
 func (*RemoveMemberFromGroupChatResponse) ProtoMessage()    {}
 func (*RemoveMemberFromGroupChatResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8c8cda079cad55b5, []int{18}
+	return fileDescriptor_8c8cda079cad55b5, []int{25}
 }
 
 func (m *RemoveMemberFromGroupChatResponse) XXX_Unmarshal(b []byte) error {
@@ -925,6 +1214,61 @@ func (m *RemoveMemberFromGroupChatResponse) GetChatMembers() []string {
 	return nil
 }
 
+type IndividualChat struct {
+	ChatId               string   `protobuf:"bytes,1,opt,name=chat_id,json=chatId,proto3" json:"chat_id,omitempty"`
+	ChatType             string   `protobuf:"bytes,2,opt,name=chat_type,json=chatType,proto3" json:"chat_type,omitempty"`
+	ChatMembers          []string `protobuf:"bytes,3,rep,name=chat_members,json=chatMembers,proto3" json:"chat_members,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *IndividualChat) Reset()         { *m = IndividualChat{} }
+func (m *IndividualChat) String() string { return proto.CompactTextString(m) }
+func (*IndividualChat) ProtoMessage()    {}
+func (*IndividualChat) Descriptor() ([]byte, []int) {
+	return fileDescriptor_8c8cda079cad55b5, []int{26}
+}
+
+func (m *IndividualChat) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_IndividualChat.Unmarshal(m, b)
+}
+func (m *IndividualChat) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_IndividualChat.Marshal(b, m, deterministic)
+}
+func (m *IndividualChat) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_IndividualChat.Merge(m, src)
+}
+func (m *IndividualChat) XXX_Size() int {
+	return xxx_messageInfo_IndividualChat.Size(m)
+}
+func (m *IndividualChat) XXX_DiscardUnknown() {
+	xxx_messageInfo_IndividualChat.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_IndividualChat proto.InternalMessageInfo
+
+func (m *IndividualChat) GetChatId() string {
+	if m != nil {
+		return m.ChatId
+	}
+	return ""
+}
+
+func (m *IndividualChat) GetChatType() string {
+	if m != nil {
+		return m.ChatType
+	}
+	return ""
+}
+
+func (m *IndividualChat) GetChatMembers() []string {
+	if m != nil {
+		return m.ChatMembers
+	}
+	return nil
+}
+
 type CreateIndividualChatRequest struct {
 	ChatMember           string   `protobuf:"bytes,1,opt,name=chat_member,json=chatMember,proto3" json:"chat_member,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -936,7 +1280,7 @@ func (m *CreateIndividualChatRequest) Reset()         { *m = CreateIndividualCha
 func (m *CreateIndividualChatRequest) String() string { return proto.CompactTextString(m) }
 func (*CreateIndividualChatRequest) ProtoMessage()    {}
 func (*CreateIndividualChatRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8c8cda079cad55b5, []int{19}
+	return fileDescriptor_8c8cda079cad55b5, []int{27}
 }
 
 func (m *CreateIndividualChatRequest) XXX_Unmarshal(b []byte) error {
@@ -977,7 +1321,7 @@ func (m *CreateIndividualChatResponse) Reset()         { *m = CreateIndividualCh
 func (m *CreateIndividualChatResponse) String() string { return proto.CompactTextString(m) }
 func (*CreateIndividualChatResponse) ProtoMessage()    {}
 func (*CreateIndividualChatResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8c8cda079cad55b5, []int{20}
+	return fileDescriptor_8c8cda079cad55b5, []int{28}
 }
 
 func (m *CreateIndividualChatResponse) XXX_Unmarshal(b []byte) error {
@@ -1019,6 +1363,147 @@ func (m *CreateIndividualChatResponse) GetChatMembers() []string {
 	return nil
 }
 
+type GetIndividualChatsRequest struct {
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *GetIndividualChatsRequest) Reset()         { *m = GetIndividualChatsRequest{} }
+func (m *GetIndividualChatsRequest) String() string { return proto.CompactTextString(m) }
+func (*GetIndividualChatsRequest) ProtoMessage()    {}
+func (*GetIndividualChatsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_8c8cda079cad55b5, []int{29}
+}
+
+func (m *GetIndividualChatsRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetIndividualChatsRequest.Unmarshal(m, b)
+}
+func (m *GetIndividualChatsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetIndividualChatsRequest.Marshal(b, m, deterministic)
+}
+func (m *GetIndividualChatsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetIndividualChatsRequest.Merge(m, src)
+}
+func (m *GetIndividualChatsRequest) XXX_Size() int {
+	return xxx_messageInfo_GetIndividualChatsRequest.Size(m)
+}
+func (m *GetIndividualChatsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetIndividualChatsRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetIndividualChatsRequest proto.InternalMessageInfo
+
+type GetIndividualChatsResponse struct {
+	IndividualChats      []*IndividualChat `protobuf:"bytes,1,rep,name=individual_chats,json=individualChats,proto3" json:"individual_chats,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
+	XXX_unrecognized     []byte            `json:"-"`
+	XXX_sizecache        int32             `json:"-"`
+}
+
+func (m *GetIndividualChatsResponse) Reset()         { *m = GetIndividualChatsResponse{} }
+func (m *GetIndividualChatsResponse) String() string { return proto.CompactTextString(m) }
+func (*GetIndividualChatsResponse) ProtoMessage()    {}
+func (*GetIndividualChatsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_8c8cda079cad55b5, []int{30}
+}
+
+func (m *GetIndividualChatsResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetIndividualChatsResponse.Unmarshal(m, b)
+}
+func (m *GetIndividualChatsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetIndividualChatsResponse.Marshal(b, m, deterministic)
+}
+func (m *GetIndividualChatsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetIndividualChatsResponse.Merge(m, src)
+}
+func (m *GetIndividualChatsResponse) XXX_Size() int {
+	return xxx_messageInfo_GetIndividualChatsResponse.Size(m)
+}
+func (m *GetIndividualChatsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetIndividualChatsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetIndividualChatsResponse proto.InternalMessageInfo
+
+func (m *GetIndividualChatsResponse) GetIndividualChats() []*IndividualChat {
+	if m != nil {
+		return m.IndividualChats
+	}
+	return nil
+}
+
+type Message struct {
+	MessageId            string   `protobuf:"bytes,1,opt,name=message_id,json=messageId,proto3" json:"message_id,omitempty"`
+	ChatId               string   `protobuf:"bytes,2,opt,name=chat_id,json=chatId,proto3" json:"chat_id,omitempty"`
+	AuthorId             string   `protobuf:"bytes,3,opt,name=author_id,json=authorId,proto3" json:"author_id,omitempty"`
+	Contents             string   `protobuf:"bytes,4,opt,name=contents,proto3" json:"contents,omitempty"`
+	Created              string   `protobuf:"bytes,5,opt,name=created,proto3" json:"created,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *Message) Reset()         { *m = Message{} }
+func (m *Message) String() string { return proto.CompactTextString(m) }
+func (*Message) ProtoMessage()    {}
+func (*Message) Descriptor() ([]byte, []int) {
+	return fileDescriptor_8c8cda079cad55b5, []int{31}
+}
+
+func (m *Message) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Message.Unmarshal(m, b)
+}
+func (m *Message) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Message.Marshal(b, m, deterministic)
+}
+func (m *Message) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Message.Merge(m, src)
+}
+func (m *Message) XXX_Size() int {
+	return xxx_messageInfo_Message.Size(m)
+}
+func (m *Message) XXX_DiscardUnknown() {
+	xxx_messageInfo_Message.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Message proto.InternalMessageInfo
+
+func (m *Message) GetMessageId() string {
+	if m != nil {
+		return m.MessageId
+	}
+	return ""
+}
+
+func (m *Message) GetChatId() string {
+	if m != nil {
+		return m.ChatId
+	}
+	return ""
+}
+
+func (m *Message) GetAuthorId() string {
+	if m != nil {
+		return m.AuthorId
+	}
+	return ""
+}
+
+func (m *Message) GetContents() string {
+	if m != nil {
+		return m.Contents
+	}
+	return ""
+}
+
+func (m *Message) GetCreated() string {
+	if m != nil {
+		return m.Created
+	}
+	return ""
+}
+
 type SendGroupMessageRequest struct {
 	ChatId               string   `protobuf:"bytes,1,opt,name=chat_id,json=chatId,proto3" json:"chat_id,omitempty"`
 	Contents             string   `protobuf:"bytes,2,opt,name=contents,proto3" json:"contents,omitempty"`
@@ -1031,7 +1516,7 @@ func (m *SendGroupMessageRequest) Reset()         { *m = SendGroupMessageRequest
 func (m *SendGroupMessageRequest) String() string { return proto.CompactTextString(m) }
 func (*SendGroupMessageRequest) ProtoMessage()    {}
 func (*SendGroupMessageRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8c8cda079cad55b5, []int{21}
+	return fileDescriptor_8c8cda079cad55b5, []int{32}
 }
 
 func (m *SendGroupMessageRequest) XXX_Unmarshal(b []byte) error {
@@ -1081,7 +1566,7 @@ func (m *SendGroupMessageResponse) Reset()         { *m = SendGroupMessageRespon
 func (m *SendGroupMessageResponse) String() string { return proto.CompactTextString(m) }
 func (*SendGroupMessageResponse) ProtoMessage()    {}
 func (*SendGroupMessageResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8c8cda079cad55b5, []int{22}
+	return fileDescriptor_8c8cda079cad55b5, []int{33}
 }
 
 func (m *SendGroupMessageResponse) XXX_Unmarshal(b []byte) error {
@@ -1149,7 +1634,7 @@ func (m *SendIndividualMessageRequest) Reset()         { *m = SendIndividualMess
 func (m *SendIndividualMessageRequest) String() string { return proto.CompactTextString(m) }
 func (*SendIndividualMessageRequest) ProtoMessage()    {}
 func (*SendIndividualMessageRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8c8cda079cad55b5, []int{23}
+	return fileDescriptor_8c8cda079cad55b5, []int{34}
 }
 
 func (m *SendIndividualMessageRequest) XXX_Unmarshal(b []byte) error {
@@ -1199,7 +1684,7 @@ func (m *SendIndividualMessageResponse) Reset()         { *m = SendIndividualMes
 func (m *SendIndividualMessageResponse) String() string { return proto.CompactTextString(m) }
 func (*SendIndividualMessageResponse) ProtoMessage()    {}
 func (*SendIndividualMessageResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8c8cda079cad55b5, []int{24}
+	return fileDescriptor_8c8cda079cad55b5, []int{35}
 }
 
 func (m *SendIndividualMessageResponse) XXX_Unmarshal(b []byte) error {
@@ -1255,6 +1740,162 @@ func (m *SendIndividualMessageResponse) GetCreated() string {
 	return ""
 }
 
+type GetGroupChatMessagesRequest struct {
+	ChatId               string   `protobuf:"bytes,1,opt,name=chat_id,json=chatId,proto3" json:"chat_id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *GetGroupChatMessagesRequest) Reset()         { *m = GetGroupChatMessagesRequest{} }
+func (m *GetGroupChatMessagesRequest) String() string { return proto.CompactTextString(m) }
+func (*GetGroupChatMessagesRequest) ProtoMessage()    {}
+func (*GetGroupChatMessagesRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_8c8cda079cad55b5, []int{36}
+}
+
+func (m *GetGroupChatMessagesRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetGroupChatMessagesRequest.Unmarshal(m, b)
+}
+func (m *GetGroupChatMessagesRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetGroupChatMessagesRequest.Marshal(b, m, deterministic)
+}
+func (m *GetGroupChatMessagesRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetGroupChatMessagesRequest.Merge(m, src)
+}
+func (m *GetGroupChatMessagesRequest) XXX_Size() int {
+	return xxx_messageInfo_GetGroupChatMessagesRequest.Size(m)
+}
+func (m *GetGroupChatMessagesRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetGroupChatMessagesRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetGroupChatMessagesRequest proto.InternalMessageInfo
+
+func (m *GetGroupChatMessagesRequest) GetChatId() string {
+	if m != nil {
+		return m.ChatId
+	}
+	return ""
+}
+
+type GetGroupChatMessagesResponse struct {
+	Messages             []*Message `protobuf:"bytes,1,rep,name=messages,proto3" json:"messages,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}   `json:"-"`
+	XXX_unrecognized     []byte     `json:"-"`
+	XXX_sizecache        int32      `json:"-"`
+}
+
+func (m *GetGroupChatMessagesResponse) Reset()         { *m = GetGroupChatMessagesResponse{} }
+func (m *GetGroupChatMessagesResponse) String() string { return proto.CompactTextString(m) }
+func (*GetGroupChatMessagesResponse) ProtoMessage()    {}
+func (*GetGroupChatMessagesResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_8c8cda079cad55b5, []int{37}
+}
+
+func (m *GetGroupChatMessagesResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetGroupChatMessagesResponse.Unmarshal(m, b)
+}
+func (m *GetGroupChatMessagesResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetGroupChatMessagesResponse.Marshal(b, m, deterministic)
+}
+func (m *GetGroupChatMessagesResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetGroupChatMessagesResponse.Merge(m, src)
+}
+func (m *GetGroupChatMessagesResponse) XXX_Size() int {
+	return xxx_messageInfo_GetGroupChatMessagesResponse.Size(m)
+}
+func (m *GetGroupChatMessagesResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetGroupChatMessagesResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetGroupChatMessagesResponse proto.InternalMessageInfo
+
+func (m *GetGroupChatMessagesResponse) GetMessages() []*Message {
+	if m != nil {
+		return m.Messages
+	}
+	return nil
+}
+
+type GetIndividualChatMessagesRequest struct {
+	ChatId               string   `protobuf:"bytes,1,opt,name=chat_id,json=chatId,proto3" json:"chat_id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *GetIndividualChatMessagesRequest) Reset()         { *m = GetIndividualChatMessagesRequest{} }
+func (m *GetIndividualChatMessagesRequest) String() string { return proto.CompactTextString(m) }
+func (*GetIndividualChatMessagesRequest) ProtoMessage()    {}
+func (*GetIndividualChatMessagesRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_8c8cda079cad55b5, []int{38}
+}
+
+func (m *GetIndividualChatMessagesRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetIndividualChatMessagesRequest.Unmarshal(m, b)
+}
+func (m *GetIndividualChatMessagesRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetIndividualChatMessagesRequest.Marshal(b, m, deterministic)
+}
+func (m *GetIndividualChatMessagesRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetIndividualChatMessagesRequest.Merge(m, src)
+}
+func (m *GetIndividualChatMessagesRequest) XXX_Size() int {
+	return xxx_messageInfo_GetIndividualChatMessagesRequest.Size(m)
+}
+func (m *GetIndividualChatMessagesRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetIndividualChatMessagesRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetIndividualChatMessagesRequest proto.InternalMessageInfo
+
+func (m *GetIndividualChatMessagesRequest) GetChatId() string {
+	if m != nil {
+		return m.ChatId
+	}
+	return ""
+}
+
+type GetIndividualChatMessagesResponse struct {
+	Messages             []*Message `protobuf:"bytes,1,rep,name=messages,proto3" json:"messages,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}   `json:"-"`
+	XXX_unrecognized     []byte     `json:"-"`
+	XXX_sizecache        int32      `json:"-"`
+}
+
+func (m *GetIndividualChatMessagesResponse) Reset()         { *m = GetIndividualChatMessagesResponse{} }
+func (m *GetIndividualChatMessagesResponse) String() string { return proto.CompactTextString(m) }
+func (*GetIndividualChatMessagesResponse) ProtoMessage()    {}
+func (*GetIndividualChatMessagesResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_8c8cda079cad55b5, []int{39}
+}
+
+func (m *GetIndividualChatMessagesResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetIndividualChatMessagesResponse.Unmarshal(m, b)
+}
+func (m *GetIndividualChatMessagesResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetIndividualChatMessagesResponse.Marshal(b, m, deterministic)
+}
+func (m *GetIndividualChatMessagesResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetIndividualChatMessagesResponse.Merge(m, src)
+}
+func (m *GetIndividualChatMessagesResponse) XXX_Size() int {
+	return xxx_messageInfo_GetIndividualChatMessagesResponse.Size(m)
+}
+func (m *GetIndividualChatMessagesResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetIndividualChatMessagesResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetIndividualChatMessagesResponse proto.InternalMessageInfo
+
+func (m *GetIndividualChatMessagesResponse) GetMessages() []*Message {
+	if m != nil {
+		return m.Messages
+	}
+	return nil
+}
+
 func init() {
 	proto.RegisterType((*AuthenticateRequest)(nil), "gopherchatter.v0.AuthenticateRequest")
 	proto.RegisterType((*AuthenticateResponse)(nil), "gopherchatter.v0.AuthenticateResponse")
@@ -1263,24 +1904,39 @@ func init() {
 	proto.RegisterType((*CreateUserResponse)(nil), "gopherchatter.v0.CreateUserResponse")
 	proto.RegisterType((*SearchUsernameRequest)(nil), "gopherchatter.v0.SearchUsernameRequest")
 	proto.RegisterType((*SearchUsernameResponse)(nil), "gopherchatter.v0.SearchUsernameResponse")
+	proto.RegisterType((*GetUsersRequest)(nil), "gopherchatter.v0.GetUsersRequest")
+	proto.RegisterType((*GetUsersResponse)(nil), "gopherchatter.v0.GetUsersResponse")
 	proto.RegisterType((*AddContactRequest)(nil), "gopherchatter.v0.AddContactRequest")
 	proto.RegisterType((*AddContactResponse)(nil), "gopherchatter.v0.AddContactResponse")
 	proto.RegisterType((*RemoveContactRequest)(nil), "gopherchatter.v0.RemoveContactRequest")
 	proto.RegisterType((*RemoveContactResponse)(nil), "gopherchatter.v0.RemoveContactResponse")
-	proto.RegisterType((*GetContactsListRequest)(nil), "gopherchatter.v0.GetContactsListRequest")
-	proto.RegisterType((*GetContactsListResponse)(nil), "gopherchatter.v0.GetContactsListResponse")
+	proto.RegisterType((*GetContactsRequest)(nil), "gopherchatter.v0.GetContactsRequest")
+	proto.RegisterType((*GetContactsResponse)(nil), "gopherchatter.v0.GetContactsResponse")
+	proto.RegisterType((*GroupChat)(nil), "gopherchatter.v0.GroupChat")
 	proto.RegisterType((*CreateGroupChatRequest)(nil), "gopherchatter.v0.CreateGroupChatRequest")
 	proto.RegisterType((*CreateGroupChatResponse)(nil), "gopherchatter.v0.CreateGroupChatResponse")
+	proto.RegisterType((*GetGroupChatsRequest)(nil), "gopherchatter.v0.GetGroupChatsRequest")
+	proto.RegisterType((*GetGroupChatsResponse)(nil), "gopherchatter.v0.GetGroupChatsResponse")
+	proto.RegisterType((*LeaveGroupChatRequest)(nil), "gopherchatter.v0.LeaveGroupChatRequest")
+	proto.RegisterType((*LeaveGroupChatResponse)(nil), "gopherchatter.v0.LeaveGroupChatResponse")
 	proto.RegisterType((*AddMemberToGroupChatRequest)(nil), "gopherchatter.v0.AddMemberToGroupChatRequest")
 	proto.RegisterType((*AddMemberToGroupChatResponse)(nil), "gopherchatter.v0.AddMemberToGroupChatResponse")
 	proto.RegisterType((*RemoveMemberFromGroupChatRequest)(nil), "gopherchatter.v0.RemoveMemberFromGroupChatRequest")
 	proto.RegisterType((*RemoveMemberFromGroupChatResponse)(nil), "gopherchatter.v0.RemoveMemberFromGroupChatResponse")
+	proto.RegisterType((*IndividualChat)(nil), "gopherchatter.v0.IndividualChat")
 	proto.RegisterType((*CreateIndividualChatRequest)(nil), "gopherchatter.v0.CreateIndividualChatRequest")
 	proto.RegisterType((*CreateIndividualChatResponse)(nil), "gopherchatter.v0.CreateIndividualChatResponse")
+	proto.RegisterType((*GetIndividualChatsRequest)(nil), "gopherchatter.v0.GetIndividualChatsRequest")
+	proto.RegisterType((*GetIndividualChatsResponse)(nil), "gopherchatter.v0.GetIndividualChatsResponse")
+	proto.RegisterType((*Message)(nil), "gopherchatter.v0.Message")
 	proto.RegisterType((*SendGroupMessageRequest)(nil), "gopherchatter.v0.SendGroupMessageRequest")
 	proto.RegisterType((*SendGroupMessageResponse)(nil), "gopherchatter.v0.SendGroupMessageResponse")
 	proto.RegisterType((*SendIndividualMessageRequest)(nil), "gopherchatter.v0.SendIndividualMessageRequest")
 	proto.RegisterType((*SendIndividualMessageResponse)(nil), "gopherchatter.v0.SendIndividualMessageResponse")
+	proto.RegisterType((*GetGroupChatMessagesRequest)(nil), "gopherchatter.v0.GetGroupChatMessagesRequest")
+	proto.RegisterType((*GetGroupChatMessagesResponse)(nil), "gopherchatter.v0.GetGroupChatMessagesResponse")
+	proto.RegisterType((*GetIndividualChatMessagesRequest)(nil), "gopherchatter.v0.GetIndividualChatMessagesRequest")
+	proto.RegisterType((*GetIndividualChatMessagesResponse)(nil), "gopherchatter.v0.GetIndividualChatMessagesResponse")
 }
 
 func init() {
@@ -1288,64 +1944,82 @@ func init() {
 }
 
 var fileDescriptor_8c8cda079cad55b5 = []byte{
-	// 904 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x57, 0x5b, 0x6f, 0x1b, 0x45,
-	0x14, 0xd6, 0xda, 0x49, 0x5b, 0x9f, 0x24, 0x24, 0x19, 0xdc, 0x78, 0xd9, 0x24, 0x22, 0x9d, 0x02,
-	0x4d, 0x50, 0xb1, 0x43, 0xf2, 0x88, 0x84, 0x64, 0x22, 0x11, 0x22, 0x48, 0x91, 0x9c, 0x54, 0x20,
-	0x24, 0x14, 0x26, 0xbb, 0x93, 0xee, 0x8a, 0xec, 0x85, 0x9d, 0x59, 0xb7, 0x7d, 0xe7, 0x0f, 0xf0,
-	0x23, 0x78, 0xe1, 0x81, 0x17, 0x5e, 0xf8, 0x79, 0x68, 0x2e, 0xeb, 0xf5, 0xee, 0xce, 0xda, 0xa6,
-	0xed, 0x43, 0xde, 0x3c, 0xe7, 0xf2, 0x7d, 0xe7, 0x32, 0x3b, 0xe7, 0x18, 0x3e, 0x0f, 0x22, 0x4e,
-	0xd3, 0x88, 0xdc, 0x0e, 0x92, 0x5b, 0xc2, 0x6f, 0xe2, 0x34, 0x1c, 0x24, 0x69, 0xcc, 0xe3, 0xeb,
-	0xec, 0x66, 0x30, 0x3e, 0x1c, 0xbc, 0x88, 0x13, 0x9f, 0xa6, 0xae, 0x4f, 0x38, 0xa7, 0x69, 0x5f,
-	0x6a, 0xd0, 0x46, 0x59, 0x38, 0x3e, 0xc4, 0xe7, 0xf0, 0xfe, 0x30, 0xe3, 0x3e, 0x8d, 0x78, 0xe0,
-	0x12, 0x4e, 0x47, 0xf4, 0xb7, 0x8c, 0x32, 0x8e, 0x1c, 0x78, 0x90, 0x31, 0x01, 0x1e, 0x52, 0xdb,
-	0xda, 0xb3, 0xf6, 0x3b, 0xa3, 0xc9, 0x59, 0xe8, 0x12, 0xc2, 0xd8, 0xcb, 0x38, 0xf5, 0xec, 0x96,
-	0xd2, 0xe5, 0x67, 0xfc, 0x2d, 0x74, 0xcb, 0x70, 0x2c, 0x89, 0x23, 0x46, 0x51, 0x17, 0x96, 0x79,
-	0xfc, 0x2b, 0x8d, 0x34, 0x98, 0x3a, 0xa0, 0x5d, 0x00, 0xfa, 0x2a, 0x09, 0x52, 0xca, 0xae, 0x08,
-	0x97, 0x58, 0xed, 0x51, 0x47, 0x4b, 0x86, 0x1c, 0x7f, 0x01, 0x4b, 0xcf, 0x19, 0x4d, 0x51, 0x0f,
-	0xee, 0x0b, 0xf2, 0xab, 0xc0, 0xd3, 0xee, 0xf7, 0xc4, 0xf1, 0xcc, 0x2b, 0x45, 0xd9, 0x2a, 0x47,
-	0x89, 0xc7, 0xb0, 0x79, 0x92, 0x52, 0xc2, 0xa9, 0x80, 0x78, 0xcb, 0xb4, 0xd0, 0x01, 0x6c, 0xe4,
-	0xbf, 0xaf, 0xdc, 0x38, 0xba, 0x09, 0xd2, 0xd0, 0x6e, 0x4b, 0x9b, 0xf5, 0x5c, 0x7e, 0xa2, 0xc4,
-	0x38, 0x02, 0x34, 0xcd, 0xab, 0xf3, 0x7f, 0x93, 0x14, 0xd0, 0x63, 0x58, 0x9b, 0xb0, 0xfa, 0x84,
-	0xf9, 0x9a, 0x72, 0x35, 0x17, 0x7e, 0x43, 0x98, 0x8f, 0x8f, 0xe1, 0xe1, 0x05, 0x25, 0xa9, 0xeb,
-	0x3f, 0xd7, 0x6e, 0x0b, 0xe4, 0x8a, 0xcf, 0x61, 0xab, 0xea, 0xf4, 0x16, 0x81, 0xe2, 0xa7, 0xb0,
-	0x39, 0xf4, 0x44, 0x05, 0x38, 0x71, 0x79, 0xce, 0xdf, 0x84, 0x84, 0xbb, 0x80, 0xa6, 0xad, 0x15,
-	0x31, 0x1e, 0x40, 0x77, 0x44, 0xc3, 0x78, 0x4c, 0x17, 0x85, 0xe9, 0xc1, 0xc3, 0x8a, 0x83, 0x46,
-	0xb2, 0x61, 0xeb, 0x94, 0x72, 0x2d, 0x65, 0xdf, 0x05, 0x2c, 0xc7, 0xc2, 0xa7, 0xd0, 0xab, 0x69,
-	0x74, 0xde, 0x4f, 0x61, 0x59, 0xe0, 0x32, 0xdb, 0xda, 0x6b, 0xef, 0xaf, 0x1c, 0x6d, 0xf5, 0xab,
-	0x5f, 0x4a, 0x5f, 0xf6, 0x53, 0x19, 0xe1, 0x1f, 0x61, 0x4b, 0x35, 0xf9, 0x34, 0x8d, 0xb3, 0xe4,
-	0xc4, 0x27, 0x93, 0x70, 0xb7, 0xa1, 0x23, 0x7c, 0xae, 0xa6, 0xcb, 0x2e, 0x04, 0xcf, 0x44, 0x43,
-	0x1f, 0xc1, 0xaa, 0x54, 0x86, 0x34, 0xbc, 0x16, 0x5c, 0xad, 0xbd, 0xf6, 0x7e, 0x67, 0xb4, 0x22,
-	0x64, 0xe7, 0x4a, 0x84, 0xff, 0xb6, 0xa0, 0x57, 0x83, 0x2e, 0x7a, 0x23, 0xdd, 0x8b, 0x52, 0x88,
-	0xe3, 0x99, 0x57, 0x26, 0x6d, 0x55, 0x48, 0x73, 0x25, 0x7f, 0x9d, 0x50, 0x7d, 0x83, 0xa4, 0xf2,
-	0xf2, 0x75, 0x42, 0xc5, 0x17, 0x28, 0x95, 0xc4, 0x0b, 0x83, 0xc8, 0x5e, 0x92, 0x5a, 0x69, 0x3e,
-	0x14, 0x82, 0x5a, 0xc0, 0xcb, 0xf5, 0x80, 0xbf, 0x87, 0xed, 0xa1, 0xe7, 0xa9, 0xd3, 0x65, 0x5c,
-	0xab, 0x47, 0x63, 0xcc, 0x53, 0x7d, 0x6d, 0x95, 0xfa, 0xfa, 0x8f, 0x05, 0x3b, 0x66, 0xc4, 0xbb,
-	0x5c, 0x86, 0x4b, 0xd8, 0x53, 0xb7, 0x51, 0x09, 0xbe, 0x4e, 0xe3, 0xf0, 0x1d, 0xd4, 0xe2, 0x5f,
-	0x0b, 0x1e, 0xcd, 0x80, 0xbd, 0xcb, 0x05, 0xf9, 0x12, 0xb6, 0xd5, 0x3d, 0x3e, 0x8b, 0xbc, 0x60,
-	0x1c, 0x78, 0x19, 0xb9, 0x9d, 0xae, 0xc5, 0x87, 0xb0, 0x32, 0x85, 0xa0, 0xe3, 0x86, 0x02, 0x00,
-	0xbf, 0x84, 0x1d, 0xb3, 0xff, 0xa2, 0x49, 0xcb, 0xbc, 0x5a, 0x95, 0xbc, 0xaa, 0x81, 0xb7, 0xeb,
-	0x81, 0x3f, 0x83, 0xde, 0x05, 0x8d, 0x3c, 0x59, 0xe6, 0x73, 0xca, 0x18, 0x79, 0x41, 0xe7, 0x36,
-	0xd0, 0x81, 0x07, 0x6e, 0x1c, 0x71, 0x1a, 0x71, 0x36, 0xa1, 0xd4, 0x67, 0xfc, 0xa7, 0x05, 0x76,
-	0x1d, 0x50, 0x67, 0xb1, 0x0b, 0x10, 0x2a, 0x51, 0x01, 0xda, 0xd1, 0x12, 0x75, 0x31, 0x72, 0xc2,
-	0x56, 0x35, 0x49, 0x92, 0x71, 0x3f, 0x96, 0x77, 0x46, 0x37, 0x4f, 0x09, 0x2a, 0xd1, 0x2c, 0x95,
-	0xa3, 0x41, 0x36, 0xdc, 0x77, 0x65, 0x59, 0x3d, 0x7b, 0x59, 0xaa, 0xf2, 0x23, 0xbe, 0x80, 0x1d,
-	0x11, 0x66, 0x51, 0xee, 0x77, 0x91, 0xfc, 0x5f, 0x16, 0xec, 0x36, 0xa0, 0xde, 0xb9, 0x0a, 0x1c,
-	0xfd, 0x01, 0xb0, 0x76, 0x2a, 0x9f, 0xfd, 0x13, 0xf5, 0xec, 0xa3, 0x9f, 0x61, 0x75, 0x7a, 0x9d,
-	0x41, 0x1f, 0xd7, 0xc7, 0x82, 0x61, 0x7b, 0x72, 0x3e, 0x99, 0x67, 0xa6, 0x73, 0xff, 0x01, 0xa0,
-	0xd8, 0x15, 0xd0, 0xe3, 0xba, 0x57, 0x6d, 0x83, 0x71, 0x3e, 0x9a, 0x6d, 0xa4, 0x81, 0x5d, 0x78,
-	0xaf, 0x3c, 0xdf, 0xd1, 0x93, 0xba, 0x9f, 0x71, 0x6d, 0x70, 0xf6, 0xe7, 0x1b, 0x16, 0xd1, 0x17,
-	0x73, 0xdc, 0x14, 0x7d, 0x6d, 0x27, 0x30, 0x45, 0x5f, 0x5f, 0x05, 0xd0, 0x2f, 0xb0, 0x56, 0x9a,
-	0xec, 0xc8, 0x50, 0x4f, 0xd3, 0xae, 0xe0, 0x3c, 0x99, 0x6b, 0xa7, 0x19, 0x6e, 0x60, 0xbd, 0xb2,
-	0x08, 0x20, 0x43, 0xde, 0xe6, 0x2d, 0xc2, 0x39, 0x58, 0xc0, 0xb2, 0xe0, 0xa9, 0x0c, 0x73, 0x13,
-	0x8f, 0x79, 0x95, 0x30, 0xf1, 0x34, 0x6d, 0x06, 0x19, 0x74, 0x4d, 0x23, 0x13, 0x7d, 0x66, 0xac,
-	0x77, 0xd3, 0xb0, 0x76, 0xfa, 0x8b, 0x9a, 0x6b, 0xda, 0xdf, 0x2d, 0xf8, 0xa0, 0x71, 0x3c, 0xa1,
-	0xa3, 0xa6, 0x6e, 0x34, 0x8f, 0x48, 0xe7, 0xf8, 0x7f, 0xf9, 0x14, 0xd9, 0x9b, 0x46, 0x85, 0x29,
-	0xfb, 0x19, 0x23, 0xc9, 0x94, 0xfd, 0xcc, 0x09, 0x14, 0xc0, 0x46, 0xf5, 0x5d, 0x47, 0x07, 0xa6,
-	0xaf, 0xc7, 0x38, 0x4c, 0x9c, 0x4f, 0x17, 0x31, 0xd5, 0x54, 0xaf, 0xc4, 0x92, 0x6f, 0x78, 0x45,
-	0x51, 0xdf, 0x0c, 0xd2, 0xf4, 0x88, 0x3b, 0x83, 0x85, 0xed, 0x15, 0xf3, 0x57, 0x9b, 0x3f, 0xad,
-	0x97, 0x3c, 0xc6, 0x87, 0xd7, 0xf7, 0xe4, 0x7f, 0xc9, 0xe3, 0xff, 0x02, 0x00, 0x00, 0xff, 0xff,
-	0xa8, 0x86, 0xcc, 0x41, 0x80, 0x0e, 0x00, 0x00,
+	// 1190 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x58, 0x4f, 0x6f, 0x1b, 0x45,
+	0x14, 0xd7, 0x3a, 0x4d, 0x13, 0x3f, 0x27, 0xb1, 0x33, 0xb5, 0x1d, 0x67, 0x9d, 0x0a, 0x67, 0xda,
+	0xd2, 0x04, 0x82, 0x1d, 0x12, 0xc1, 0xa5, 0x08, 0x61, 0x2c, 0x61, 0xa2, 0x92, 0x22, 0x9c, 0x44,
+	0xa0, 0x48, 0xc8, 0x6c, 0xbc, 0x93, 0x78, 0x45, 0xbc, 0x6b, 0x76, 0xc7, 0x6e, 0x7b, 0xe7, 0xcc,
+	0x89, 0x0f, 0xc0, 0x85, 0x0b, 0x07, 0x2e, 0x5c, 0xf8, 0x78, 0x68, 0x66, 0x67, 0xff, 0xcf, 0xda,
+	0x4b, 0xd2, 0x83, 0x6f, 0x9e, 0xf7, 0xde, 0xfc, 0xde, 0x9f, 0xf9, 0xcd, 0xce, 0x7b, 0x86, 0x8f,
+	0x0d, 0x93, 0x12, 0xdb, 0xd4, 0x6e, 0x5b, 0xe3, 0x5b, 0x8d, 0x5e, 0x5b, 0xf6, 0xa8, 0x35, 0xb6,
+	0x2d, 0x6a, 0x5d, 0x4d, 0xae, 0x5b, 0xd3, 0xc3, 0xd6, 0x8d, 0x35, 0x1e, 0x12, 0x7b, 0x30, 0xd4,
+	0x28, 0x25, 0x76, 0x93, 0x6b, 0x50, 0x29, 0x2a, 0x9c, 0x1e, 0xe2, 0x53, 0x78, 0xd4, 0x9e, 0xd0,
+	0x21, 0x31, 0xa9, 0x31, 0xd0, 0x28, 0xe9, 0x91, 0x5f, 0x26, 0xc4, 0xa1, 0x48, 0x85, 0xd5, 0x89,
+	0xc3, 0xc0, 0x47, 0xa4, 0xa6, 0x34, 0x94, 0xbd, 0x7c, 0xcf, 0x5f, 0x33, 0xdd, 0x58, 0x73, 0x9c,
+	0xd7, 0x96, 0xad, 0xd7, 0x72, 0xae, 0xce, 0x5b, 0xe3, 0x97, 0x50, 0x8e, 0xc2, 0x39, 0x63, 0xcb,
+	0x74, 0x08, 0x2a, 0xc3, 0x32, 0xb5, 0x7e, 0x26, 0xa6, 0x00, 0x73, 0x17, 0xe8, 0x31, 0x00, 0x79,
+	0x33, 0x36, 0x6c, 0xe2, 0xf4, 0x35, 0xca, 0xb1, 0x96, 0x7a, 0x79, 0x21, 0x69, 0x53, 0xfc, 0x02,
+	0x1e, 0x5c, 0x38, 0xc4, 0x46, 0x5b, 0xb0, 0xc2, 0x9c, 0xf7, 0x0d, 0x5d, 0x6c, 0x7f, 0xc8, 0x96,
+	0x27, 0x7a, 0x24, 0xca, 0x5c, 0x34, 0x4a, 0x3c, 0x85, 0xcd, 0x8e, 0x4d, 0x34, 0x4a, 0x18, 0xc4,
+	0x3d, 0xd3, 0x42, 0xfb, 0x50, 0xf2, 0x7e, 0xf7, 0x07, 0x96, 0x79, 0x6d, 0xd8, 0xa3, 0xda, 0x12,
+	0xb7, 0x29, 0x7a, 0xf2, 0x8e, 0x2b, 0xc6, 0x26, 0xa0, 0xb0, 0x5f, 0x91, 0xff, 0x5d, 0x52, 0x40,
+	0x4f, 0x60, 0xdd, 0xf7, 0x3a, 0xd4, 0x9c, 0xa1, 0x70, 0xb9, 0xe6, 0x09, 0xbf, 0xd6, 0x9c, 0x21,
+	0x3e, 0x86, 0xca, 0x19, 0xd1, 0xec, 0xc1, 0xf0, 0x42, 0x6c, 0xcb, 0x90, 0x2b, 0x3e, 0x85, 0x6a,
+	0x7c, 0xd3, 0x3d, 0x02, 0xc5, 0x07, 0x50, 0xec, 0x12, 0xca, 0xb0, 0x1c, 0xcf, 0xfb, 0xb6, 0x6b,
+	0xde, 0x37, 0x74, 0xa7, 0xa6, 0x34, 0x96, 0xf6, 0xf2, 0xbd, 0x15, 0x17, 0xc8, 0xc1, 0x5f, 0x40,
+	0x29, 0xb0, 0x16, 0x6e, 0x0f, 0x60, 0x99, 0xa9, 0x5d, 0xdb, 0xc2, 0x51, 0xb5, 0x19, 0x27, 0x6a,
+	0x93, 0x97, 0xd3, 0x35, 0xc2, 0x07, 0xb0, 0xd9, 0xd6, 0x59, 0xc5, 0xa9, 0x36, 0xa0, 0x9e, 0xc7,
+	0xb4, 0xc8, 0x71, 0x19, 0x50, 0xd8, 0xda, 0xf5, 0x88, 0x5b, 0x50, 0xee, 0x91, 0x91, 0x35, 0x25,
+	0x59, 0x61, 0xb6, 0xa0, 0x12, 0xdb, 0x20, 0x90, 0xca, 0x80, 0xba, 0x84, 0x0a, 0xa9, 0x57, 0x00,
+	0xdc, 0x81, 0x47, 0x11, 0xe9, 0x9d, 0x12, 0xfd, 0x43, 0x81, 0x7c, 0xd7, 0xb6, 0x26, 0xe3, 0xce,
+	0x50, 0xe3, 0xa1, 0x31, 0xbb, 0x50, 0x68, 0x6c, 0x79, 0xa2, 0xa3, 0x3a, 0xe4, 0xb9, 0x22, 0x7c,
+	0x38, 0x4c, 0xf0, 0x8a, 0xb1, 0xc8, 0x53, 0xd2, 0xb7, 0x63, 0x22, 0x18, 0xc4, 0x95, 0xe7, 0x6f,
+	0xc7, 0x84, 0xdd, 0x40, 0xae, 0xd4, 0xf4, 0x91, 0x61, 0xd6, 0x1e, 0x70, 0x2d, 0x37, 0x6f, 0x33,
+	0x01, 0xda, 0x85, 0x35, 0xae, 0x1e, 0x91, 0xd1, 0x15, 0x0b, 0x7a, 0x99, 0x9f, 0x64, 0x81, 0xc9,
+	0x4e, 0x5d, 0x11, 0xfe, 0x01, 0xaa, 0x2e, 0xdf, 0xfd, 0x38, 0xbd, 0x4a, 0x46, 0xa2, 0x52, 0x62,
+	0x51, 0xc5, 0x91, 0x73, 0x49, 0xe4, 0xbf, 0x15, 0xd8, 0x4a, 0x40, 0x07, 0x34, 0x5d, 0xbc, 0x52,
+	0x54, 0xa1, 0xdc, 0x25, 0xd4, 0x0f, 0xd6, 0xa7, 0xc2, 0x05, 0x54, 0x62, 0x72, 0x91, 0xc5, 0x67,
+	0x50, 0xb8, 0x61, 0xd2, 0x3e, 0x43, 0xf1, 0x28, 0x51, 0x4f, 0x52, 0x22, 0xc8, 0x1f, 0x6e, 0x7c,
+	0x14, 0x7c, 0x08, 0x95, 0x6f, 0x88, 0x36, 0x4d, 0x16, 0x3e, 0xad, 0x38, 0xb8, 0x06, 0xd5, 0xf8,
+	0x0e, 0xc1, 0xe1, 0x6f, 0xa1, 0xde, 0xd6, 0x75, 0x37, 0x91, 0x73, 0x2b, 0x33, 0x62, 0xf8, 0xb6,
+	0xe4, 0x22, 0xb7, 0xe5, 0x1f, 0x05, 0x76, 0xe4, 0x88, 0x8b, 0x7c, 0x82, 0xe7, 0xd0, 0x70, 0xef,
+	0xb8, 0x2b, 0xf8, 0xca, 0xb6, 0x46, 0xef, 0xa0, 0x16, 0xff, 0x2a, 0xb0, 0x3b, 0x03, 0x76, 0x91,
+	0x0b, 0x62, 0xc0, 0xc6, 0x89, 0xa9, 0x1b, 0x53, 0x43, 0x9f, 0x68, 0xb7, 0xd9, 0x3e, 0x42, 0x3c,
+	0x92, 0x5c, 0x2c, 0x92, 0xb8, 0xab, 0xa5, 0xa4, 0xab, 0xcf, 0xa1, 0xee, 0xde, 0xf6, 0xa8, 0x43,
+	0xaf, 0xec, 0xef, 0x41, 0x21, 0x84, 0x20, 0x7c, 0x43, 0x00, 0x80, 0x5f, 0xc3, 0x8e, 0x7c, 0x7f,
+	0xd6, 0xfa, 0xde, 0x35, 0xf0, 0x3a, 0x6c, 0x77, 0x09, 0x8d, 0x7a, 0xf5, 0xef, 0xbe, 0x01, 0xaa,
+	0x4c, 0x29, 0x62, 0x7a, 0x09, 0x25, 0xc3, 0x57, 0x45, 0xbe, 0x02, 0x8d, 0xe4, 0x57, 0x20, 0x96,
+	0x57, 0xd1, 0x88, 0x82, 0xe2, 0xdf, 0x15, 0x58, 0x39, 0x25, 0x8e, 0xa3, 0xdd, 0xf0, 0x93, 0x1f,
+	0xb9, 0x3f, 0x83, 0x7c, 0xf3, 0x42, 0xe2, 0x52, 0xd5, 0xab, 0x45, 0x2e, 0x5e, 0x0b, 0x6d, 0x42,
+	0x87, 0x16, 0x67, 0xb1, 0xa0, 0x93, 0x2b, 0x70, 0x5b, 0x80, 0x81, 0x65, 0x52, 0x62, 0x52, 0x47,
+	0x90, 0xc9, 0x5f, 0xa3, 0x1a, 0xac, 0x0c, 0x78, 0xf5, 0xf5, 0xda, 0x32, 0x57, 0x79, 0x4b, 0xfc,
+	0x0a, 0xb6, 0xce, 0x88, 0xa9, 0x73, 0xc2, 0x8b, 0xf0, 0xe6, 0x5e, 0xa5, 0xb0, 0xa7, 0x5c, 0xd4,
+	0x13, 0xfe, 0x53, 0x81, 0x5a, 0x12, 0x50, 0x14, 0x74, 0x81, 0xf2, 0x3e, 0x83, 0x1d, 0x16, 0x66,
+	0x70, 0x6a, 0xef, 0x22, 0xf9, 0xbf, 0x14, 0x78, 0x9c, 0x82, 0xba, 0x78, 0x15, 0xf8, 0x14, 0xea,
+	0xe1, 0x77, 0x4f, 0x44, 0xea, 0xcc, 0x7d, 0xa6, 0x2e, 0x60, 0x47, 0xbe, 0x4f, 0xa4, 0xf8, 0x09,
+	0xac, 0x8a, 0x84, 0xbc, 0xdb, 0xb2, 0x9d, 0xbc, 0x2d, 0x5e, 0x5d, 0x7c, 0x53, 0xfc, 0x02, 0x1a,
+	0x89, 0xab, 0x98, 0x39, 0xa6, 0x4b, 0xd8, 0x9d, 0xb1, 0xf9, 0x5e, 0x81, 0x1d, 0xfd, 0x56, 0x84,
+	0xf5, 0x2e, 0x37, 0xeb, 0xb8, 0x66, 0xe8, 0x47, 0x58, 0x0b, 0x8f, 0x51, 0xe8, 0x59, 0x12, 0x46,
+	0x32, 0xb5, 0xa9, 0xef, 0xcf, 0x33, 0x13, 0x71, 0x7e, 0x0f, 0x10, 0xcc, 0x28, 0xe8, 0x49, 0x72,
+	0x57, 0x62, 0x72, 0x52, 0x9f, 0xce, 0x36, 0x12, 0xc0, 0x03, 0xd8, 0x88, 0xce, 0x15, 0xe8, 0x79,
+	0x72, 0x9f, 0x74, 0x5c, 0x51, 0xf7, 0xe6, 0x1b, 0x0a, 0x27, 0xdf, 0xc1, 0xaa, 0x37, 0x3f, 0xa0,
+	0x5d, 0x49, 0xb3, 0x14, 0x9d, 0x44, 0x54, 0x3c, 0xcb, 0x24, 0x28, 0x48, 0x30, 0x22, 0xc8, 0x0a,
+	0x92, 0x18, 0x37, 0x64, 0x05, 0x49, 0x4e, 0x19, 0xe8, 0x27, 0x58, 0x8f, 0x0c, 0x0d, 0x48, 0x72,
+	0x44, 0xb2, 0x31, 0x44, 0x7d, 0x3e, 0xd7, 0x4e, 0x78, 0xb8, 0x84, 0x42, 0x68, 0xce, 0x40, 0x4f,
+	0xa5, 0xd9, 0xc6, 0x86, 0x13, 0xf5, 0xd9, 0x1c, 0x2b, 0x81, 0x7d, 0x0d, 0xc5, 0x58, 0x03, 0x8e,
+	0xf6, 0xd2, 0x78, 0x10, 0xef, 0x93, 0xd4, 0xfd, 0x0c, 0x96, 0x41, 0x95, 0x22, 0x0d, 0xb2, 0xac,
+	0x4a, 0xb2, 0xce, 0x5a, 0x56, 0x25, 0x79, 0xa7, 0x3d, 0x80, 0x8d, 0x68, 0xe7, 0x2b, 0x23, 0xa6,
+	0xb4, 0x9b, 0x96, 0x11, 0x53, 0xde, 0x44, 0xa3, 0x09, 0x94, 0x65, 0x2d, 0x2f, 0xfa, 0x48, 0x4a,
+	0x95, 0xb4, 0x66, 0x5b, 0x6d, 0x66, 0x35, 0x17, 0x6e, 0x7f, 0x55, 0x60, 0x3b, 0xb5, 0xbd, 0x44,
+	0x47, 0x69, 0x44, 0x4a, 0x6f, 0x71, 0xd5, 0xe3, 0xff, 0xb5, 0x27, 0xc8, 0x5e, 0xd6, 0x7f, 0xc9,
+	0xb2, 0x9f, 0xd1, 0xe7, 0xc9, 0xb2, 0x9f, 0xd9, 0xd6, 0x59, 0x7c, 0xfa, 0x8e, 0x35, 0x58, 0xe8,
+	0x43, 0x29, 0x31, 0xe4, 0x3d, 0x9a, 0x7a, 0x90, 0xcd, 0x58, 0x38, 0x34, 0xa0, 0x14, 0x6f, 0x3f,
+	0xd0, 0xbe, 0xec, 0xe3, 0x25, 0xed, 0x79, 0xd4, 0x0f, 0xb2, 0x98, 0x0a, 0x57, 0x6f, 0xa0, 0x22,
+	0x7d, 0xec, 0x51, 0x53, 0x0e, 0x92, 0xd6, 0x6b, 0xa8, 0xad, 0xcc, 0xf6, 0xc1, 0x61, 0xca, 0x9e,
+	0x60, 0xd9, 0x61, 0xce, 0x78, 0xe2, 0x65, 0x87, 0x39, 0xf3, 0x65, 0x67, 0x54, 0x4e, 0x7d, 0x66,
+	0x65, 0x54, 0x9e, 0xf7, 0xa0, 0xcb, 0xa8, 0x3c, 0xf7, 0x1d, 0xff, 0x72, 0xf3, 0xb2, 0x18, 0xd9,
+	0x35, 0x3d, 0xbc, 0x7a, 0xc8, 0xff, 0x40, 0x3d, 0xfe, 0x2f, 0x00, 0x00, 0xff, 0xff, 0xfc, 0x4f,
+	0x7c, 0xb8, 0x75, 0x15, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -1363,15 +2037,21 @@ type GopherChatterClient interface {
 	Authenticate(ctx context.Context, in *AuthenticateRequest, opts ...grpc.CallOption) (*AuthenticateResponse, error)
 	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error)
 	SearchUsername(ctx context.Context, in *SearchUsernameRequest, opts ...grpc.CallOption) (*SearchUsernameResponse, error)
+	GetUsers(ctx context.Context, in *GetUsersRequest, opts ...grpc.CallOption) (*GetUsersResponse, error)
 	AddContact(ctx context.Context, in *AddContactRequest, opts ...grpc.CallOption) (*AddContactResponse, error)
 	RemoveContact(ctx context.Context, in *RemoveContactRequest, opts ...grpc.CallOption) (*RemoveContactResponse, error)
-	GetContactsList(ctx context.Context, in *GetContactsListRequest, opts ...grpc.CallOption) (*GetContactsListResponse, error)
+	GetContacts(ctx context.Context, in *GetContactsRequest, opts ...grpc.CallOption) (*GetContactsResponse, error)
 	CreateGroupChat(ctx context.Context, in *CreateGroupChatRequest, opts ...grpc.CallOption) (*CreateGroupChatResponse, error)
+	GetGroupChats(ctx context.Context, in *GetGroupChatsRequest, opts ...grpc.CallOption) (*GetGroupChatsResponse, error)
+	LeaveGroupChat(ctx context.Context, in *LeaveGroupChatRequest, opts ...grpc.CallOption) (*LeaveGroupChatResponse, error)
 	AddMemberToGroupChat(ctx context.Context, in *AddMemberToGroupChatRequest, opts ...grpc.CallOption) (*AddMemberToGroupChatResponse, error)
 	RemoveMemberFromGroupChat(ctx context.Context, in *RemoveMemberFromGroupChatRequest, opts ...grpc.CallOption) (*RemoveMemberFromGroupChatResponse, error)
 	CreateIndividualChat(ctx context.Context, in *CreateIndividualChatRequest, opts ...grpc.CallOption) (*CreateIndividualChatResponse, error)
+	GetIndividualChats(ctx context.Context, in *GetIndividualChatsRequest, opts ...grpc.CallOption) (*GetIndividualChatsResponse, error)
 	SendGroupMessage(ctx context.Context, in *SendGroupMessageRequest, opts ...grpc.CallOption) (*SendGroupMessageResponse, error)
 	SendIndividualMessage(ctx context.Context, in *SendIndividualMessageRequest, opts ...grpc.CallOption) (*SendIndividualMessageResponse, error)
+	GetGroupChatMessages(ctx context.Context, in *GetGroupChatMessagesRequest, opts ...grpc.CallOption) (*GetGroupChatMessagesResponse, error)
+	GetIndividualChatMessages(ctx context.Context, in *GetIndividualChatMessagesRequest, opts ...grpc.CallOption) (*GetIndividualChatMessagesResponse, error)
 }
 
 type gopherChatterClient struct {
@@ -1409,6 +2089,15 @@ func (c *gopherChatterClient) SearchUsername(ctx context.Context, in *SearchUser
 	return out, nil
 }
 
+func (c *gopherChatterClient) GetUsers(ctx context.Context, in *GetUsersRequest, opts ...grpc.CallOption) (*GetUsersResponse, error) {
+	out := new(GetUsersResponse)
+	err := c.cc.Invoke(ctx, "/gopherchatter.v0.GopherChatter/GetUsers", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *gopherChatterClient) AddContact(ctx context.Context, in *AddContactRequest, opts ...grpc.CallOption) (*AddContactResponse, error) {
 	out := new(AddContactResponse)
 	err := c.cc.Invoke(ctx, "/gopherchatter.v0.GopherChatter/AddContact", in, out, opts...)
@@ -1427,9 +2116,9 @@ func (c *gopherChatterClient) RemoveContact(ctx context.Context, in *RemoveConta
 	return out, nil
 }
 
-func (c *gopherChatterClient) GetContactsList(ctx context.Context, in *GetContactsListRequest, opts ...grpc.CallOption) (*GetContactsListResponse, error) {
-	out := new(GetContactsListResponse)
-	err := c.cc.Invoke(ctx, "/gopherchatter.v0.GopherChatter/GetContactsList", in, out, opts...)
+func (c *gopherChatterClient) GetContacts(ctx context.Context, in *GetContactsRequest, opts ...grpc.CallOption) (*GetContactsResponse, error) {
+	out := new(GetContactsResponse)
+	err := c.cc.Invoke(ctx, "/gopherchatter.v0.GopherChatter/GetContacts", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1439,6 +2128,24 @@ func (c *gopherChatterClient) GetContactsList(ctx context.Context, in *GetContac
 func (c *gopherChatterClient) CreateGroupChat(ctx context.Context, in *CreateGroupChatRequest, opts ...grpc.CallOption) (*CreateGroupChatResponse, error) {
 	out := new(CreateGroupChatResponse)
 	err := c.cc.Invoke(ctx, "/gopherchatter.v0.GopherChatter/CreateGroupChat", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *gopherChatterClient) GetGroupChats(ctx context.Context, in *GetGroupChatsRequest, opts ...grpc.CallOption) (*GetGroupChatsResponse, error) {
+	out := new(GetGroupChatsResponse)
+	err := c.cc.Invoke(ctx, "/gopherchatter.v0.GopherChatter/GetGroupChats", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *gopherChatterClient) LeaveGroupChat(ctx context.Context, in *LeaveGroupChatRequest, opts ...grpc.CallOption) (*LeaveGroupChatResponse, error) {
+	out := new(LeaveGroupChatResponse)
+	err := c.cc.Invoke(ctx, "/gopherchatter.v0.GopherChatter/LeaveGroupChat", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1472,6 +2179,15 @@ func (c *gopherChatterClient) CreateIndividualChat(ctx context.Context, in *Crea
 	return out, nil
 }
 
+func (c *gopherChatterClient) GetIndividualChats(ctx context.Context, in *GetIndividualChatsRequest, opts ...grpc.CallOption) (*GetIndividualChatsResponse, error) {
+	out := new(GetIndividualChatsResponse)
+	err := c.cc.Invoke(ctx, "/gopherchatter.v0.GopherChatter/GetIndividualChats", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *gopherChatterClient) SendGroupMessage(ctx context.Context, in *SendGroupMessageRequest, opts ...grpc.CallOption) (*SendGroupMessageResponse, error) {
 	out := new(SendGroupMessageResponse)
 	err := c.cc.Invoke(ctx, "/gopherchatter.v0.GopherChatter/SendGroupMessage", in, out, opts...)
@@ -1490,20 +2206,44 @@ func (c *gopherChatterClient) SendIndividualMessage(ctx context.Context, in *Sen
 	return out, nil
 }
 
+func (c *gopherChatterClient) GetGroupChatMessages(ctx context.Context, in *GetGroupChatMessagesRequest, opts ...grpc.CallOption) (*GetGroupChatMessagesResponse, error) {
+	out := new(GetGroupChatMessagesResponse)
+	err := c.cc.Invoke(ctx, "/gopherchatter.v0.GopherChatter/GetGroupChatMessages", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *gopherChatterClient) GetIndividualChatMessages(ctx context.Context, in *GetIndividualChatMessagesRequest, opts ...grpc.CallOption) (*GetIndividualChatMessagesResponse, error) {
+	out := new(GetIndividualChatMessagesResponse)
+	err := c.cc.Invoke(ctx, "/gopherchatter.v0.GopherChatter/GetIndividualChatMessages", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // GopherChatterServer is the server API for GopherChatter service.
 type GopherChatterServer interface {
 	Authenticate(context.Context, *AuthenticateRequest) (*AuthenticateResponse, error)
 	CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error)
 	SearchUsername(context.Context, *SearchUsernameRequest) (*SearchUsernameResponse, error)
+	GetUsers(context.Context, *GetUsersRequest) (*GetUsersResponse, error)
 	AddContact(context.Context, *AddContactRequest) (*AddContactResponse, error)
 	RemoveContact(context.Context, *RemoveContactRequest) (*RemoveContactResponse, error)
-	GetContactsList(context.Context, *GetContactsListRequest) (*GetContactsListResponse, error)
+	GetContacts(context.Context, *GetContactsRequest) (*GetContactsResponse, error)
 	CreateGroupChat(context.Context, *CreateGroupChatRequest) (*CreateGroupChatResponse, error)
+	GetGroupChats(context.Context, *GetGroupChatsRequest) (*GetGroupChatsResponse, error)
+	LeaveGroupChat(context.Context, *LeaveGroupChatRequest) (*LeaveGroupChatResponse, error)
 	AddMemberToGroupChat(context.Context, *AddMemberToGroupChatRequest) (*AddMemberToGroupChatResponse, error)
 	RemoveMemberFromGroupChat(context.Context, *RemoveMemberFromGroupChatRequest) (*RemoveMemberFromGroupChatResponse, error)
 	CreateIndividualChat(context.Context, *CreateIndividualChatRequest) (*CreateIndividualChatResponse, error)
+	GetIndividualChats(context.Context, *GetIndividualChatsRequest) (*GetIndividualChatsResponse, error)
 	SendGroupMessage(context.Context, *SendGroupMessageRequest) (*SendGroupMessageResponse, error)
 	SendIndividualMessage(context.Context, *SendIndividualMessageRequest) (*SendIndividualMessageResponse, error)
+	GetGroupChatMessages(context.Context, *GetGroupChatMessagesRequest) (*GetGroupChatMessagesResponse, error)
+	GetIndividualChatMessages(context.Context, *GetIndividualChatMessagesRequest) (*GetIndividualChatMessagesResponse, error)
 }
 
 // UnimplementedGopherChatterServer can be embedded to have forward compatible implementations.
@@ -1519,17 +2259,26 @@ func (*UnimplementedGopherChatterServer) CreateUser(ctx context.Context, req *Cr
 func (*UnimplementedGopherChatterServer) SearchUsername(ctx context.Context, req *SearchUsernameRequest) (*SearchUsernameResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchUsername not implemented")
 }
+func (*UnimplementedGopherChatterServer) GetUsers(ctx context.Context, req *GetUsersRequest) (*GetUsersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUsers not implemented")
+}
 func (*UnimplementedGopherChatterServer) AddContact(ctx context.Context, req *AddContactRequest) (*AddContactResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddContact not implemented")
 }
 func (*UnimplementedGopherChatterServer) RemoveContact(ctx context.Context, req *RemoveContactRequest) (*RemoveContactResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RemoveContact not implemented")
 }
-func (*UnimplementedGopherChatterServer) GetContactsList(ctx context.Context, req *GetContactsListRequest) (*GetContactsListResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetContactsList not implemented")
+func (*UnimplementedGopherChatterServer) GetContacts(ctx context.Context, req *GetContactsRequest) (*GetContactsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetContacts not implemented")
 }
 func (*UnimplementedGopherChatterServer) CreateGroupChat(ctx context.Context, req *CreateGroupChatRequest) (*CreateGroupChatResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateGroupChat not implemented")
+}
+func (*UnimplementedGopherChatterServer) GetGroupChats(ctx context.Context, req *GetGroupChatsRequest) (*GetGroupChatsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetGroupChats not implemented")
+}
+func (*UnimplementedGopherChatterServer) LeaveGroupChat(ctx context.Context, req *LeaveGroupChatRequest) (*LeaveGroupChatResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method LeaveGroupChat not implemented")
 }
 func (*UnimplementedGopherChatterServer) AddMemberToGroupChat(ctx context.Context, req *AddMemberToGroupChatRequest) (*AddMemberToGroupChatResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddMemberToGroupChat not implemented")
@@ -1540,11 +2289,20 @@ func (*UnimplementedGopherChatterServer) RemoveMemberFromGroupChat(ctx context.C
 func (*UnimplementedGopherChatterServer) CreateIndividualChat(ctx context.Context, req *CreateIndividualChatRequest) (*CreateIndividualChatResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateIndividualChat not implemented")
 }
+func (*UnimplementedGopherChatterServer) GetIndividualChats(ctx context.Context, req *GetIndividualChatsRequest) (*GetIndividualChatsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetIndividualChats not implemented")
+}
 func (*UnimplementedGopherChatterServer) SendGroupMessage(ctx context.Context, req *SendGroupMessageRequest) (*SendGroupMessageResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SendGroupMessage not implemented")
 }
 func (*UnimplementedGopherChatterServer) SendIndividualMessage(ctx context.Context, req *SendIndividualMessageRequest) (*SendIndividualMessageResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SendIndividualMessage not implemented")
+}
+func (*UnimplementedGopherChatterServer) GetGroupChatMessages(ctx context.Context, req *GetGroupChatMessagesRequest) (*GetGroupChatMessagesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetGroupChatMessages not implemented")
+}
+func (*UnimplementedGopherChatterServer) GetIndividualChatMessages(ctx context.Context, req *GetIndividualChatMessagesRequest) (*GetIndividualChatMessagesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetIndividualChatMessages not implemented")
 }
 
 func RegisterGopherChatterServer(s *grpc.Server, srv GopherChatterServer) {
@@ -1605,6 +2363,24 @@ func _GopherChatter_SearchUsername_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _GopherChatter_GetUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUsersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GopherChatterServer).GetUsers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/gopherchatter.v0.GopherChatter/GetUsers",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GopherChatterServer).GetUsers(ctx, req.(*GetUsersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _GopherChatter_AddContact_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(AddContactRequest)
 	if err := dec(in); err != nil {
@@ -1641,20 +2417,20 @@ func _GopherChatter_RemoveContact_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GopherChatter_GetContactsList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetContactsListRequest)
+func _GopherChatter_GetContacts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetContactsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GopherChatterServer).GetContactsList(ctx, in)
+		return srv.(GopherChatterServer).GetContacts(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/gopherchatter.v0.GopherChatter/GetContactsList",
+		FullMethod: "/gopherchatter.v0.GopherChatter/GetContacts",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GopherChatterServer).GetContactsList(ctx, req.(*GetContactsListRequest))
+		return srv.(GopherChatterServer).GetContacts(ctx, req.(*GetContactsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1673,6 +2449,42 @@ func _GopherChatter_CreateGroupChat_Handler(srv interface{}, ctx context.Context
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(GopherChatterServer).CreateGroupChat(ctx, req.(*CreateGroupChatRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _GopherChatter_GetGroupChats_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetGroupChatsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GopherChatterServer).GetGroupChats(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/gopherchatter.v0.GopherChatter/GetGroupChats",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GopherChatterServer).GetGroupChats(ctx, req.(*GetGroupChatsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _GopherChatter_LeaveGroupChat_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LeaveGroupChatRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GopherChatterServer).LeaveGroupChat(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/gopherchatter.v0.GopherChatter/LeaveGroupChat",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GopherChatterServer).LeaveGroupChat(ctx, req.(*LeaveGroupChatRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1731,6 +2543,24 @@ func _GopherChatter_CreateIndividualChat_Handler(srv interface{}, ctx context.Co
 	return interceptor(ctx, in, info, handler)
 }
 
+func _GopherChatter_GetIndividualChats_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetIndividualChatsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GopherChatterServer).GetIndividualChats(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/gopherchatter.v0.GopherChatter/GetIndividualChats",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GopherChatterServer).GetIndividualChats(ctx, req.(*GetIndividualChatsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _GopherChatter_SendGroupMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SendGroupMessageRequest)
 	if err := dec(in); err != nil {
@@ -1767,6 +2597,42 @@ func _GopherChatter_SendIndividualMessage_Handler(srv interface{}, ctx context.C
 	return interceptor(ctx, in, info, handler)
 }
 
+func _GopherChatter_GetGroupChatMessages_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetGroupChatMessagesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GopherChatterServer).GetGroupChatMessages(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/gopherchatter.v0.GopherChatter/GetGroupChatMessages",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GopherChatterServer).GetGroupChatMessages(ctx, req.(*GetGroupChatMessagesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _GopherChatter_GetIndividualChatMessages_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetIndividualChatMessagesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GopherChatterServer).GetIndividualChatMessages(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/gopherchatter.v0.GopherChatter/GetIndividualChatMessages",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GopherChatterServer).GetIndividualChatMessages(ctx, req.(*GetIndividualChatMessagesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _GopherChatter_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "gopherchatter.v0.GopherChatter",
 	HandlerType: (*GopherChatterServer)(nil),
@@ -1784,6 +2650,10 @@ var _GopherChatter_serviceDesc = grpc.ServiceDesc{
 			Handler:    _GopherChatter_SearchUsername_Handler,
 		},
 		{
+			MethodName: "GetUsers",
+			Handler:    _GopherChatter_GetUsers_Handler,
+		},
+		{
 			MethodName: "AddContact",
 			Handler:    _GopherChatter_AddContact_Handler,
 		},
@@ -1792,12 +2662,20 @@ var _GopherChatter_serviceDesc = grpc.ServiceDesc{
 			Handler:    _GopherChatter_RemoveContact_Handler,
 		},
 		{
-			MethodName: "GetContactsList",
-			Handler:    _GopherChatter_GetContactsList_Handler,
+			MethodName: "GetContacts",
+			Handler:    _GopherChatter_GetContacts_Handler,
 		},
 		{
 			MethodName: "CreateGroupChat",
 			Handler:    _GopherChatter_CreateGroupChat_Handler,
+		},
+		{
+			MethodName: "GetGroupChats",
+			Handler:    _GopherChatter_GetGroupChats_Handler,
+		},
+		{
+			MethodName: "LeaveGroupChat",
+			Handler:    _GopherChatter_LeaveGroupChat_Handler,
 		},
 		{
 			MethodName: "AddMemberToGroupChat",
@@ -1812,12 +2690,24 @@ var _GopherChatter_serviceDesc = grpc.ServiceDesc{
 			Handler:    _GopherChatter_CreateIndividualChat_Handler,
 		},
 		{
+			MethodName: "GetIndividualChats",
+			Handler:    _GopherChatter_GetIndividualChats_Handler,
+		},
+		{
 			MethodName: "SendGroupMessage",
 			Handler:    _GopherChatter_SendGroupMessage_Handler,
 		},
 		{
 			MethodName: "SendIndividualMessage",
 			Handler:    _GopherChatter_SendIndividualMessage_Handler,
+		},
+		{
+			MethodName: "GetGroupChatMessages",
+			Handler:    _GopherChatter_GetGroupChatMessages_Handler,
+		},
+		{
+			MethodName: "GetIndividualChatMessages",
+			Handler:    _GopherChatter_GetIndividualChatMessages_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
