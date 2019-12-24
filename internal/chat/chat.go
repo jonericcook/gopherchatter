@@ -106,16 +106,17 @@ func DeleteGroup(ctx context.Context, db *mongo.Database, chatID primitive.Objec
 	return nil
 }
 
-// CreateIndividual inserts a new individual chat into the database.
-func CreateIndividual(ctx context.Context, db *mongo.Database, c Individual) (*Individual, error) {
-	result, err := db.Collection(chatCollection).InsertOne(ctx, c)
-	if err != nil {
-		return nil, status.Errorf(
-			codes.Internal, "creating individual chat",
+// UpdateGroupChatAdmin updates the admin of a group chat.
+func UpdateGroupChatAdmin(ctx context.Context, db *mongo.Database, chatID primitive.ObjectID, userID primitive.ObjectID) error {
+	var chat Group
+	filter := bson.M{"_id": chatID, "type": GroupLabel}
+	update := bson.M{"$set": bson.M{"admin": userID}}
+	if err := db.Collection(chatCollection).FindOneAndUpdate(ctx, filter, update).Decode(&chat); err != nil {
+		return status.Errorf(
+			codes.Internal, "updating group chat admin",
 		)
 	}
-	c.ID = result.InsertedID.(primitive.ObjectID)
-	return &c, nil
+	return nil
 }
 
 // AddGroupChatMember adds a member to a group chat.
@@ -144,6 +145,18 @@ func RemoveGroupChatMember(ctx context.Context, db *mongo.Database, chatID primi
 	return nil
 }
 
+// CreateIndividual inserts a new individual chat into the database.
+func CreateIndividual(ctx context.Context, db *mongo.Database, c Individual) (*Individual, error) {
+	result, err := db.Collection(chatCollection).InsertOne(ctx, c)
+	if err != nil {
+		return nil, status.Errorf(
+			codes.Internal, "creating individual chat",
+		)
+	}
+	c.ID = result.InsertedID.(primitive.ObjectID)
+	return &c, nil
+}
+
 // IndividualChatExists checks if an individual chat exists.
 func IndividualChatExists(ctx context.Context, db *mongo.Database, m0 primitive.ObjectID, m1 primitive.ObjectID) bool {
 	var chat Individual
@@ -152,17 +165,4 @@ func IndividualChatExists(ctx context.Context, db *mongo.Database, m0 primitive.
 		return false
 	}
 	return true
-}
-
-// UpdateGroupChatAdmin updates the admin of a group chat.
-func UpdateGroupChatAdmin(ctx context.Context, db *mongo.Database, chatID primitive.ObjectID, userID primitive.ObjectID) error {
-	var chat Group
-	filter := bson.M{"_id": chatID, "type": GroupLabel}
-	update := bson.M{"$set": bson.M{"admin": userID}}
-	if err := db.Collection(chatCollection).FindOneAndUpdate(ctx, filter, update).Decode(&chat); err != nil {
-		return status.Errorf(
-			codes.Internal, "updating group chat admin",
-		)
-	}
-	return nil
 }

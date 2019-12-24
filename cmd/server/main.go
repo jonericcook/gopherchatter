@@ -71,12 +71,10 @@ func (gcs *gopherChatterServer) Authenticate(ctx context.Context, req *gophercha
 // User
 
 func (gcs *gopherChatterServer) CreateUser(ctx context.Context, req *gopherchatterv0.CreateUserRequest) (*gopherchatterv0.CreateUserResponse, error) {
-	unu := user.NewUser{
-		Username:        req.GetUsername(),
-		Password:        req.GetPassword(),
-		PasswordConfirm: req.GetPasswordConfirm(),
+	if err := user.CheckUsernameFormat(ctx, gcs.db, req.GetUsername()); err != nil {
+		return nil, err
 	}
-	if err := user.CheckFormat(ctx, gcs.db, unu); err != nil {
+	if err := user.CheckPasswordFormat(ctx, gcs.db, req.GetPassword(), req.GetPasswordConfirm()); err != nil {
 		return nil, err
 	}
 	if user.NameExists(ctx, gcs.db, req.GetUsername()) {
@@ -798,7 +796,7 @@ func (gcs *gopherChatterServer) GetGroupChatMessages(ctx context.Context, req *g
 			codes.AlreadyExists, "member not in chat",
 		)
 	}
-	messages, err := message.GetMessages(ctx, gcs.db, chatID)
+	messages, err := message.GetChatMessages(ctx, gcs.db, chatID)
 	var m []*gopherchatterv0.Message
 	for _, e := range messages {
 		m = append(m, &gopherchatterv0.Message{
@@ -841,7 +839,7 @@ func (gcs *gopherChatterServer) GetIndividualChatMessages(ctx context.Context, r
 			codes.AlreadyExists, "member not in chat",
 		)
 	}
-	messages, err := message.GetMessages(ctx, gcs.db, chatID)
+	messages, err := message.GetChatMessages(ctx, gcs.db, chatID)
 	var m []*gopherchatterv0.Message
 	for _, e := range messages {
 		m = append(m, &gopherchatterv0.Message{

@@ -13,35 +13,40 @@ import (
 
 const usersCollection = "users"
 
-// CheckFormat checks if the username and password of the acceptable format.
-func CheckFormat(ctx context.Context, db *mongo.Database, nu NewUser) error {
-	if len(nu.Username) < 1 {
+// CheckUsernameFormat checks if the username and password of the acceptable format.
+func CheckUsernameFormat(ctx context.Context, db *mongo.Database, username string) error {
+	if len(username) < 1 {
 		return status.Errorf(
-			codes.InvalidArgument, "name must be at least 1 character",
+			codes.InvalidArgument, "username must be at least 1 character",
 		)
 	}
-	if len(nu.Username) > 12 {
+	if len(username) > 12 {
 		return status.Errorf(
-			codes.InvalidArgument, "name must be at max 12 characters",
+			codes.InvalidArgument, "username must be at max 12 characters",
 		)
 	}
 	var foundNonLowerCaseInUsernane bool
-	for _, c := range nu.Username {
+	for _, c := range username {
 		if int(c) < 97 || int(c) > 122 {
 			foundNonLowerCaseInUsernane = true
 		}
 	}
 	if foundNonLowerCaseInUsernane {
 		return status.Errorf(
-			codes.InvalidArgument, "name must only contain lowercase characters",
+			codes.InvalidArgument, "username must only contain lowercase characters",
 		)
 	}
-	if len(nu.Password) < 8 {
+	return nil
+}
+
+// CheckPasswordFormat checks if the username and password of the acceptable format.
+func CheckPasswordFormat(ctx context.Context, db *mongo.Database, password string, passwordConfirm string) error {
+	if len(password) < 8 {
 		return status.Errorf(
 			codes.InvalidArgument, "password must be at least 8 characters",
 		)
 	}
-	if len(nu.Password) > 64 {
+	if len(password) > 64 {
 		return status.Errorf(
 			codes.InvalidArgument, "password must be at max 64 characters",
 		)
@@ -50,7 +55,7 @@ func CheckFormat(ctx context.Context, db *mongo.Database, nu NewUser) error {
 	var foundUpperInPassword bool
 	var foundNumberInPassword bool
 	var foundSpecialInPassword bool
-	for _, c := range nu.Password {
+	for _, c := range password {
 		if int(c) >= 65 && int(c) <= 90 {
 			foundUpperInPassword = true
 		}
@@ -87,7 +92,7 @@ func CheckFormat(ctx context.Context, db *mongo.Database, nu NewUser) error {
 			codes.InvalidArgument, "password must contain at least one special character",
 		)
 	}
-	if nu.Password != nu.PasswordConfirm {
+	if password != passwordConfirm {
 		return status.Errorf(
 			codes.InvalidArgument, "password and password_confirm must match",
 		)

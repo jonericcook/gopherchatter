@@ -36,8 +36,8 @@ func DeleteChatMessages(ctx context.Context, db *mongo.Database, chatID primitiv
 	return nil
 }
 
-// GetMessages returns all the messages for a chat.
-func GetMessages(ctx context.Context, db *mongo.Database, chatID primitive.ObjectID) ([]Message, error) {
+// GetChatMessages returns all the messages for a chat.
+func GetChatMessages(ctx context.Context, db *mongo.Database, chatID primitive.ObjectID) ([]Message, error) {
 	filter := bson.M{"chat_id": chatID}
 	cursor, err := db.Collection(messageCollection).Find(ctx, filter)
 	if err != nil {
