@@ -236,3 +236,6 @@ service GopherChatter {
   rpc GetGroupChatMessages(GetGroupChatMessagesRequest) returns (GetGroupChatMessagesResponse);
   rpc GetIndividualChatMessages(GetIndividualChatMessagesRequest) returns (GetIndividualChatMessagesResponse);
 }
+
+// COMPILE
+// protoc internal/platform/protobuf/v0/gopherchatter.proto --go_out=plugins=grpc:.
